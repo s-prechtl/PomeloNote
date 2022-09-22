@@ -1,5 +1,5 @@
 {
-	"name": "svelte",
+	"name": "svelte_pages",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
-		"svelte": "^3.44.0",
+		"@types/bootstrap": "^5.2.4",
 		"svelte-check": "^2.7.1",
 		"svelte-preprocess": "^4.10.6",
 		"tslib": "^2.3.1",
