@@ -3,6 +3,7 @@
     import type {Authentication} from "./models/authentication";
     import { SvelteToast } from '@zerodevx/svelte-toast'
     import {createErrorToast} from "../../models/customToasts";
+    import logo from "../../resources/images/logo2.svg";
 
     let user: string;
     let password: string;
@@ -61,7 +62,7 @@
 <body>
 <main class="form-signin w-100 m-auto">
 
-    <img class="mb-4" src="../../resources/logo3.svg" alt="Logo" width="72" height="57">
+    <img class="img-fluid" src="{logo}" alt="Logo">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
