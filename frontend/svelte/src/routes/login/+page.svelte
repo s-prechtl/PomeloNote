@@ -95,7 +95,6 @@
     }
 
     body {
-        display: flex;
         align-items: center;
         padding-top: 40px;
         padding-bottom: 40px;
@@ -121,5 +120,9 @@
         margin-bottom: 10px;
         border-top-left-radius: 0;
         border-top-right-radius: 0;
+    }
+
+    .img-fluid{
+        margin-bottom: 15px;
     }
 </style>
