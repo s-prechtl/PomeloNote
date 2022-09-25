@@ -17,8 +17,11 @@
         notes = notes.filter(i => i === i);
     }
 
-    function sortNotesByDate(){
-        notes.sort(function(x, y) {
+    /**
+     * Sorts the "notes" Array by the lastOpened Property of a Note
+     */
+    function sortNotesByDate() {
+        notes.sort(function (x, y) {
             if (x.lastOpened > y.lastOpened) {
                 return 1;
             }
@@ -65,63 +68,114 @@
     }
 
     /**
+     * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
+     * @param note The note to be removed
+     */
+    function removeNotePrompt(note) {
+        const reallyDelete = confirm("Do you really want to delete this Note?");
+        if (reallyDelete) {
+            removeNote(note);
+        }
+    }
+
+    /**
      * Removes the note from the "notes" Array
      * @param note The note to be removed
      */
     function removeNote(note) {
         notes = notes.filter(i => i !== note);
     }
+
+    /**
+     * Handle when the mouse hovers over a Note List Element
+     * @param noteId The ID of the note that is hovered over
+     */
+    function handleMouseOverLi(noteId: number) {
+        document.getElementById("noteButton" + noteId).style.display = "block";
+    }
+
+    /**
+     * Handle when the mouse exits hovering over a Note List Element
+     * @param noteId The ID of the note that is hovered over
+     */
+    function handleMouseOutLi(noteId: number) {
+        document.getElementById("noteButton" + noteId).style.display = "none";
+    }
+
+    /**
+     * Handles a click on a note list element
+     * @param note The note the user clicked on
+     */
+    function onNoteLiClick(note) {
+        window.localStorage.setItem("clickedNoteId", note.id);
+        window.location = "/editor";
+    }
 </script>
 
+
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PomeloNote | Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 </head>
 
-<html lang="en">
-<!-- Add Note Button -->
-<!-- &#10133; is a Thiccc Plus UTF-8 Character -->
-<div class="offset-8 col-1">
-    <button on:click={() => addNotePrompt()}>&#10133;</button>
-</div>
+<body>
+<div class="row">
+    <!-- Add Note Button -->
+    <div class="offset-md-7 col-md-1">
+        <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+    </div>
 
-<div class="offset-4 col-4">
-    <!-- Notes listing -->
-    <ul>
-        {#each notes as note}
-            <li>
-                <span>
-                    <a href="/editor" on:click={() => window.localStorage.setItem("clickedNoteId", note.id)}>
-                        {note.title}
-                    </a>
-                </span>
-                <!-- &#128465; is a Trashcan UTF-8 Character -->
-                <button on:click={() => removeNote(note)}>&#128465;</button>
-            </li>
-        {/each}
-    </ul>
+    <div class="offset-md-4 col-md-4">
+        <!-- Notes listing -->
+        <ul>
+            {#each notes as note}
+                <li on:mouseover={() => handleMouseOverLi(note.id)}
+                    on:mouseout={() => handleMouseOutLi(note.id)}>
+                    <div class="row">
+                        <div class="col-md-10" on:click={() => onNoteLiClick(note)}>
+                        <span>
+                            {note.title} <br/>
+                            {note.lastOpened}
+                        </span>
+                        </div>
+                        <div class="col-md-1">
+                            <button style="display: none" id={"noteButton" + note.id}
+                                    on:click={() => removeNotePrompt(note)}>
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            {/each}
+        </ul>
+    </div>
 </div>
+</body>
 </html>
 
 <style>
     html,
     :root {
         --main-txt-color: black;
+        --cross-txt-color: red;
+
+        --color-primary: #fff494;
+        --color-primary-600: #fff17a;
+        --color-primary-700: #ffec47;
+        --color-primary-800: #ffe714;
+        --color-primary-900: #e0c900;
     }
 
     body {
         height: 100%;
-    }
-
-    body {
-        display: flex;
-        align-items: center;
         padding-top: 40px;
         padding-bottom: 40px;
-        background-color: #f5f5f5;
+        background-color: #ffffff;
     }
 
     a {
@@ -133,6 +187,8 @@
         list-style: none;
         padding: 6px 10px;
         border-bottom: 1px solid #ddd;
+        border-bottom-color: var(--color-primary-900);
+        background-color: var(--color-primary-600);
     }
 
     li button {
@@ -155,5 +211,21 @@
 
     ul {
         padding-left: 0;
+    }
+
+    .bi-x {
+        color: var(--cross-txt-color);
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary-800);
+        border: var(--color-primary-800);
+        color: var(--main-txt-color);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-900);
+        border: var(--color-primary-900);
+        color: var(--main-txt-color);
     }
 </style>
