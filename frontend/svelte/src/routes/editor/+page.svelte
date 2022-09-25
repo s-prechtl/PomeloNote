@@ -1,17 +1,12 @@
 <script lang="ts">
-    interface Note {
-        id: number;
-        title: string;
-        content: string;
-    }
+    import type {Note} from "../../types";
 
     let notes: Note[] = JSON.parse(window.localStorage.getItem("notes"));
     const clickedNoteId = window.localStorage.getItem("clickedNoteId");
-
-
 </script>
 
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{"Pomelonote | Edit " + notes[clickedNoteId].title}</title>
@@ -19,6 +14,8 @@
           integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 </head>
 
+<html lang="en">
 <div class="offset-3 col-6">
     samc samg ccocooc {notes[clickedNoteId].content}
 </div>
+</html>

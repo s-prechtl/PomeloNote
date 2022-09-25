@@ -1,15 +1,12 @@
 <script lang="ts">
-    interface Note {
-        id: number;
-        title: string;
-        content: string;
-    }
+    import type {Note} from "../types";
 
     //TODO: TEMP!!!
-    const tempJson = "[{\"id\":0,\"title\":\"samc\",\"content\":\"SAAAAAAAAAAMC\"},{\"id\":1,\"title\":\"Push\",\"content\":\"Kollege Pusch\"},{\"id\":2,\"title\":\"Mike\",\"content\":\"C Meister\"},{\"id\":3,\"title\":\"kekw\",\"content\":\"OMEGALUL\"}]";
+    const tempJson = "[{\"id\":0,\"title\":\"samc\",\"content\":\"SAAAAAAAAAAMC\",\"lastOpened\":\"2022-09-25T10:45:49.903Z\"},{\"id\":1,\"title\":\"Push\",\"content\":\"Kollege Pusch\",\"lastOpened\":\"2022-09-25T10:50:49.903Z\"},{\"id\":2,\"title\":\"Mike\",\"content\":\"C Meister\",\"lastOpened\":\"2022-09-25T10:09:13.903Z\"},{\"id\":3,\"title\":\"kekw\",\"content\":\"OMEGALUL\",\"lastOpened\":\"2022-09-25T12:03:49.903Z\"}]";
     //TODO: TEMP!!!
 
     let notes: Note[] = JSON.parse(tempJson);
+    sortNotesByDate();
     window.localStorage.setItem("notes", JSON.stringify(notes));
 
     /**
@@ -20,31 +17,51 @@
         notes = notes.filter(i => i === i);
     }
 
+    function sortNotesByDate(){
+        notes.sort(function(x, y) {
+            if (x.lastOpened > y.lastOpened) {
+                return 1;
+            }
+
+            if (x.lastOpened < y.lastOpened) {
+                return -1;
+            }
+
+            return 0;
+        });
+    }
+
     /**
      * Gives the user a prompt to input the new title of the note and creates it if the title is valid
      */
     function addNotePrompt() {
         let newTitle = prompt('Name of the new Note');
+        console.log(notes)
         if (newTitle != null && newTitle != '') {
             addNote(newTitle);
+            console.log(notes)
+            sortNotesByDate();
+            reloadNotesListing();
             window.localStorage.setItem("notes", JSON.stringify(notes));
         }
     }
 
     /**
      * Adds a new note to the "notes" Array with:
-     *  * the latest id + 1
+     *  * the latest id + 1 (or 0 if no notes exist)
      *  * no content
      * @param title The title of the new Note
      */
     function addNote(title: string) {
+        let date = new Date();
+        let newNoteId = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
         let note: Note = {
-            id: notes[notes.length - 1].id + 1,
+            id: newNoteId,
             title: title,
-            content: ""
+            content: "",
+            lastOpened: date.toISOString()
         };
         notes.push(note);
-        reloadNotesListing()
     }
 
     /**
@@ -64,6 +81,7 @@
           integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 </head>
 
+<html lang="en">
 <!-- Add Note Button -->
 <!-- &#10133; is a Thiccc Plus UTF-8 Character -->
 <div class="offset-8 col-1">
@@ -86,6 +104,7 @@
         {/each}
     </ul>
 </div>
+</html>
 
 <style>
     html,
