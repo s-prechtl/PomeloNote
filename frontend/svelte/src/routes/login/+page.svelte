@@ -35,18 +35,15 @@
             } else{
                 createErrorToast(response.error.message);
             }
+        } else {
+            if (rememberMe) {
+                setCookie(null, 'jwt', response.jwt, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: '/'
+                })
+                window.location = "/";
+            }
         }
-
-        if (rememberMe) {
-            setCookie(null, 'jwt', response.jwt, {
-                maxAge: 30 * 24 * 60 * 60,
-                path: '/'
-            })
-            // window.location = "/";
-        }
-
-        console.log(response);
-
     }
 
 
@@ -64,7 +61,7 @@
 <body>
 <main class="form-signin w-100 m-auto">
 
-    <img class="mb-4" src="/docs/5.2/assets/brand/bootstrap-logo.svg" alt="Logo" width="72" height="57">
+    <img class="mb-4" src="../../resources/logo3.svg" alt="Logo" width="72" height="57">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
