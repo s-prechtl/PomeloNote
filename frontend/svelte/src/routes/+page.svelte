@@ -1,40 +1,23 @@
 <script lang="ts">
     import type {Note} from "../types";
+    import {bearerFetch, jwt} from "../models/PomeloUtils";
     import {onMount} from "svelte";
-    import {parseCookies} from "nookies";
-    import {bearerFetch} from "../models/PomeloUtils";
-    import {User} from "../models/user";
 
-    let user: User;
+    const endpoint = "/notes";
 
+    let notes: Note[];
+    // onMount(async () => {
+    //     const response = await bearerFetch(endpoint, jwt);
+    //     debugger;
+    //     var data = await response.json();
+    //     console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    // });
 
-    onMount(async () => {
-        const jwt = parseCookies("/").jwt;
-        let invalid = !jwt;
-
-        if (!invalid) {
-            const request = await bearerFetch("/users/me", jwt);
-            const response = await  request.json();
-
-            if ('error' in response){
-                invalid = true;
-            } else {
-                user = new User(response);
-            }
-        }
-
-        if (invalid) {
-            window.location = "/login";
-        }
+    onMount(() => {
+        console.log("snasidbsa dghsasa");
     });
 
-
-
-    //TODO: TEMP!!!
-    const tempJson = "[{\"id\":0,\"title\":\"samc\",\"content\":\"SAAAAAAAAAAMC\",\"lastOpened\":\"2022-09-25T10:45:49.903Z\"},{\"id\":1,\"title\":\"Push\",\"content\":\"Kollege Pusch\",\"lastOpened\":\"2022-09-25T10:50:49.903Z\"},{\"id\":2,\"title\":\"Mike\",\"content\":\"C Meister\",\"lastOpened\":\"2022-09-25T10:09:13.903Z\"},{\"id\":3,\"title\":\"kekw\",\"content\":\"OMEGALUL\",\"lastOpened\":\"2022-09-25T12:03:49.903Z\"}]";
-    //TODO: TEMP!!!
-
-    let notes: Note[] = JSON.parse(tempJson);
+    console.log(notes);
     sortNotesByDate();
     window.localStorage.setItem("notes", JSON.stringify(notes));
 
