@@ -22,7 +22,9 @@ module.exports = createCoreController('api::note.note', ({strapi}) => ({
           id: userId
         }
       },
-      sort: 'lastViewed'
+      sort: {
+        lastViewed: 'desc'
+      }
     });
     return JSON.stringify(entries);
   },
