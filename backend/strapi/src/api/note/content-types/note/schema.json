@@ -4,7 +4,8 @@
   "info": {
     "singularName": "note",
     "pluralName": "notes",
-    "displayName": "note"
+    "displayName": "note",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,7 +22,7 @@
     "owners": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "admin::user"
+      "target": "plugin::users-permissions.user"
     },
     "lastViewed": {
       "type": "datetime",
