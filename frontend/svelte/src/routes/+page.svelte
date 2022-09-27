@@ -1,5 +1,34 @@
 <script lang="ts">
     import type {Note} from "../types";
+    import {onMount} from "svelte";
+    import {parseCookies} from "nookies";
+    import {bearerFetch} from "../models/PomeloUtils";
+    import {User} from "../models/user";
+
+    let user: User;
+
+
+    onMount(async () => {
+        const jwt = parseCookies("/").jwt;
+        let invalid = !jwt;
+
+        if (!invalid) {
+            const request = await bearerFetch("/users/me", jwt);
+            const response = await  request.json();
+
+            if ('error' in response){
+                invalid = true;
+            } else {
+                user = new User(response);
+            }
+        }
+
+        if (invalid) {
+            window.location = "/login";
+        }
+    });
+
+
 
     //TODO: TEMP!!!
     const tempJson = "[{\"id\":0,\"title\":\"samc\",\"content\":\"SAAAAAAAAAAMC\",\"lastOpened\":\"2022-09-25T10:45:49.903Z\"},{\"id\":1,\"title\":\"Push\",\"content\":\"Kollege Pusch\",\"lastOpened\":\"2022-09-25T10:50:49.903Z\"},{\"id\":2,\"title\":\"Mike\",\"content\":\"C Meister\",\"lastOpened\":\"2022-09-25T10:09:13.903Z\"},{\"id\":3,\"title\":\"kekw\",\"content\":\"OMEGALUL\",\"lastOpened\":\"2022-09-25T12:03:49.903Z\"}]";

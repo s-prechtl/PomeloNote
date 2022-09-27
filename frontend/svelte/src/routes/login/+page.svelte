@@ -10,6 +10,9 @@
     let rememberMe: boolean = true;
 
 
+    /**
+     * Handles the button click.
+     */
     async function handleSubmit() {
         const endpoint = "http://localhost:1337/api/auth/local";
         const payload = {
