@@ -5,14 +5,11 @@
 
     const endpoint = "/notes";
 
-    let notes: Note[];
-    // onMount(async () => {
-    //     const response = await bearerFetch(endpoint, jwt);
-    //     debugger;
-    //     var data = await response.json();
-    //     console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    // });
+    //:TODO TEMP!!!
+    const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}}]";
+    //:TODO TEMP!!!
 
+    let notes: Note[] = JSON.parse(jsonStr);
     onMount(() => {
         console.log("snasidbsa dghsasa");
     });
@@ -34,29 +31,31 @@
         let newTitle = prompt('Name of the new Note');
         console.log(notes)
         if (newTitle != null && newTitle != '') {
-            addNote(newTitle);
+            // addNote(newTitle);
             console.log(notes)
             reloadNotesListing();
         }
     }
 
-    /**
-     * Adds a new note to the "notes" Array with:
-     *  * the latest id + 1 (or 0 if no notes exist)
-     *  * no content
-     * @param title The title of the new Note
-     */
-    function addNote(title: string) {
-        let date = new Date();
-        let newNoteId = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
-        let note: Note = {
-            id: newNoteId,
-            title: title,
-            content: "",
-            lastOpened: date.toISOString()
-        };
-        notes.push(note);
-    }
+    // //so a schas
+    // /**
+    //  * Adds a new note to the "notes" Array with:
+    //  *  * the latest id + 1 (or 0 if no notes exist)
+    //  *  * no content
+    //  * @param title The title of the new Note
+    //  */
+    // function addNote(title: string) {
+    //     let date = new Date();
+    //     let newNoteId = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
+    //     let note: Note = {
+    //         id: newNoteId,
+    //         attributes:
+    //         title: title,
+    //         content: "",
+    //         lastOpened: date.toISOString()
+    //     };
+    //     notes.push(note);
+    // }
 
     /**
      * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
@@ -121,28 +120,30 @@
     </div>
 
     <div class="offset-md-4 col-md-4">
-        <!-- Notes listing -->
-        <ul>
-            {#each notes as note}
-                <li on:mouseover={() => handleMouseOverLi(note.id)}
-                    on:mouseout={() => handleMouseOutLi(note.id)}>
-                    <div class="row">
-                        <div class="col-md-10" on:click={() => onNoteLiClick(note)}>
+        {#if notes.length !== 0}
+            <!-- Notes listing -->
+            <ul>
+                {#each notes as note}
+                    <li on:mouseover={() => handleMouseOverLi(note.id)}
+                        on:mouseout={() => handleMouseOutLi(note.id)}>
+                        <div class="row">
+                            <div class="col-md-10" on:click={() => onNoteLiClick(note)}>
                         <span>
-                            {note.title} <br/>
-                            {note.lastOpened}
+                            {note.attributes.title} <br/>
+                            {note.attributes.lastViewed}
                         </span>
+                            </div>
+                            <div class="col-md-1">
+                                <button style="display: none" id={"noteButton" + note.id}
+                                        on:click={() => removeNotePrompt(note)}>
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <button style="display: none" id={"noteButton" + note.id}
-                                    on:click={() => removeNotePrompt(note)}>
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            {/each}
-        </ul>
+                    </li>
+                {/each}
+            </ul>
+        {/if}
     </div>
 </div>
 </body>
