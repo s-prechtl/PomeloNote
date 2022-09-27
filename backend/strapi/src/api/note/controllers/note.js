@@ -18,7 +18,6 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
    */
   async find(ctx) {
     const userId = ctx.state.user.id;
-
     const entries = await strapi.entityService.findMany(noteUid, {
       populate: ['owners'],
       filters: {
@@ -33,18 +32,24 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
     return JSON.stringify(entries);
   },
   /**
-   * Finds the note by id. Exits 403 if the note does not belong to the user making the request
+   * Finds the note by id and updates lastViewed. Exits 403 if the note does not belong to the user making the request.
    * @param ctx
    * @returns {Promise<string>}
    */
   async findOne(ctx) {
     const noteId = getNoteIdFromUrl(ctx.request.url);
     const userId = ctx.state.user.id;
-    const entry = await strapi.entityService.findOne(noteUid, noteId, {
+    let entry = await strapi.entityService.findOne(noteUid, noteId, {
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
+    console.log(authorized)
     if (authorized) {
+      entry = await strapi.entityService.update(noteUid, noteId, {
+        data: {
+          lastViewed: Date.now()
+        }
+      })
       return JSON.stringify(entry);
     } else {
       ctx.response.status = 403;
