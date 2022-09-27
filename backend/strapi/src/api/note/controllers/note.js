@@ -7,10 +7,10 @@ function getNoteIdFromUrl(url) {
 /**
  * note controller
  */
-
+const noteUid = 'api::note.note';
 const {createCoreController} = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::note.note', ({strapi}) => ({
+module.exports = createCoreController(noteUid, ({strapi}) => ({
   /**
    * Gives all, to the user related, notes.
    * @param ctx
@@ -19,7 +19,7 @@ module.exports = createCoreController('api::note.note', ({strapi}) => ({
   async find(ctx) {
     const userId = ctx.state.user.id;
 
-    const entries = await strapi.entityService.findMany('api::note.note', {
+    const entries = await strapi.entityService.findMany(noteUid, {
       populate: ['owners'],
       filters: {
         owners: {
@@ -40,7 +40,7 @@ module.exports = createCoreController('api::note.note', ({strapi}) => ({
   async findOne(ctx) {
     const noteId = getNoteIdFromUrl(ctx.request.url);
     const userId = ctx.state.user.id;
-    const entry = await strapi.entityService.findOne('api::note.note', noteId, {
+    const entry = await strapi.entityService.findOne(noteUid, noteId, {
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
@@ -50,27 +50,40 @@ module.exports = createCoreController('api::note.note', ({strapi}) => ({
       ctx.response.status = 403;
     }
   },
+  /**
+   * Updates note. Removing owners is an illegal operation (400)
+   * @param ctx
+   * @returns {Promise<string>}
+   */
   async update(ctx) {
     const noteId = getNoteIdFromUrl(ctx.request.url)
     const userId = ctx.state.user.id;
     const requestBody = ctx.request.body;
-    const entry = await strapi.entityService.findOne('api::note.note', noteId, {
+    const entry = await strapi.entityService.findOne(noteUid, noteId, {
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
-    const allowed = !requestBody.data.hasOwnProperty("owners");
+    let allowed;
+    if (requestBody.data.hasOwnProperty("owners")) {
+      allowed = entry.owners.every(owner => requestBody.data.owners.includes(owner));
+    }
     if (!authorized) {
       ctx.response.status = 403;
     } else if (!allowed) {
       ctx.response.status = 400;
     } else {
-      super.update(ctx);
+      return super.update(ctx);
     }
   },
+  /**
+   * Deletes user from note owners. If note has no owners anymore, deletes note.
+   * @param ctx
+   * @returns nothing
+   */
   async delete(ctx) {
     const noteId = getNoteIdFromUrl(ctx.request.url)
     const userId = ctx.state.user.id;
-    const entry = await strapi.entityService.findOne('api::note.note', noteId, {
+    const entry = await strapi.entityService.findOne(noteUid, noteId, {
       populate: ['owners'],
     });
     const ownersCount = entry.owners.length;
@@ -82,11 +95,12 @@ module.exports = createCoreController('api::note.note', ({strapi}) => ({
     if (ownersCount === 1) {
       super.delete(ctx);
     } else {
-      strapi.entityService.update('api::note.note', noteId, {
+      strapi.entityService.update(noteUid, noteId, {
         data: {
           owners: entry.owners.filter(owner => owner.id !== userId)
         }
       })
     }
+    ctx.response.status = 200;
   }
 }));
