@@ -12,6 +12,6 @@ export async function load({params}) {
     }
 
     if (invalid) {
-        window.location = "/login";
+        // window.location = "/login";
     }
 }

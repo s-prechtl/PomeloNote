@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Note} from "../types";
+    import type {Note} from "../models/types";
     import {bearerFetch, jwt} from "../models/PomeloUtils";
     import {onMount} from "svelte";
 
@@ -18,8 +18,6 @@
     });
 
     console.log(notes);
-    sortNotesByDate();
-    window.localStorage.setItem("notes", JSON.stringify(notes));
 
     /**
      * Reloads the Notes Listing
@@ -27,23 +25,6 @@
      */
     function reloadNotesListing() {
         notes = notes.filter(i => i === i);
-    }
-
-    /**
-     * Sorts the "notes" Array by the lastOpened Property of a Note
-     */
-    function sortNotesByDate() {
-        notes.sort(function (x, y) {
-            if (x.lastOpened > y.lastOpened) {
-                return 1;
-            }
-
-            if (x.lastOpened < y.lastOpened) {
-                return -1;
-            }
-
-            return 0;
-        });
     }
 
     /**
@@ -55,9 +36,7 @@
         if (newTitle != null && newTitle != '') {
             addNote(newTitle);
             console.log(notes)
-            sortNotesByDate();
             reloadNotesListing();
-            window.localStorage.setItem("notes", JSON.stringify(notes));
         }
     }
 
@@ -119,7 +98,6 @@
      * @param note The note the user clicked on
      */
     function onNoteLiClick(note) {
-        window.localStorage.setItem("clickedNoteId", note.id);
         window.location = "/editor";
     }
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Note} from "../../types";
+    import type {Note} from "../../models/types";
 
     let notes: Note[] = JSON.parse(window.localStorage.getItem("notes"));
     const clickedNoteId = window.localStorage.getItem("clickedNoteId");
