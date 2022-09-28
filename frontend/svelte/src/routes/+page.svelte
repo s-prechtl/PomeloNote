@@ -1,12 +1,11 @@
 <script lang="ts">
     import type {Note} from "../models/types";
-    import {bearerFetch, jwt} from "../models/PomeloUtils";
     import {onMount} from "svelte";
 
     const endpoint = "/notes";
 
     //:TODO TEMP!!!
-    const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}}]";
+    const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}},{\"id\":2,\"attributes\":{\"title\":\"DIO\",\"content\":\"in all CAPS\",\"lastViewed\":\"2022-09-27\"}},{\"id\":3,\"attributes\":{\"title\":\"Eren\",\"content\":\"Jäger\",\"lastViewed\":\"2022-09-27\"}},{\"id\":4,\"attributes\":{\"title\":\"stow\",\"content\":\"Beitn Chef\",\"lastViewed\":\"2022-09-27\"}},{\"id\":5,\"attributes\":{\"title\":\"Wonder of U\",\"content\":\"Umm... so, personally... this is the first time this has happened, so I'm a bit surprised. Only a centimeter away... I mean, I don't think there's ever been someone who's gotten that close to me... without a, you know... calamity occurring. I'm not really... not really sure what happens at one centimeter away... 'cause it's my first time. I don't really understand it either. Seriously. But in the flow of calamity... there's nobody who can attack me. Not a single person. That, I know for sure. Wonder of U.\",\"lastViewed\":\"2022-09-27\"}}]";
     //:TODO TEMP!!!
 
     let notes: Note[] = JSON.parse(jsonStr);
@@ -98,6 +97,7 @@
      */
     function onNoteLiClick(note) {
         window.location = "/editor";
+        note.attributes.lastViewed = new Date().toISOString();
     }
 </script>
 
@@ -113,12 +113,15 @@
 </head>
 
 <body>
+<div class="container">
 <div class="row">
     <!-- Add Note Button -->
     <div class="offset-md-7 col-md-1">
         <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
     </div>
+</div>
 
+<div class="row">
     <div class="offset-md-4 col-md-4">
         {#if notes.length !== 0}
             <!-- Notes listing -->
@@ -127,13 +130,16 @@
                     <li on:mouseover={() => handleMouseOverLi(note.id)}
                         on:mouseout={() => handleMouseOutLi(note.id)}>
                         <div class="row">
-                            <div class="col-md-10" on:click={() => onNoteLiClick(note)}>
-                        <span>
-                            {note.attributes.title} <br/>
-                            {note.attributes.lastViewed}
-                        </span>
+                            <div class="col-10" on:click={() => onNoteLiClick(note)}>
+                                <div>
+                                    {note.attributes.title}
+                                </div>
+                                <div class="list-date-text">
+                                    {note.attributes.lastViewed}
+                                </div>
                             </div>
-                            <div class="col-md-1">
+
+                            <div class="col-1">
                                 <button style="display: none" id={"noteButton" + note.id}
                                         on:click={() => removeNotePrompt(note)}>
                                     <i class="bi bi-x"></i>
@@ -146,6 +152,7 @@
         {/if}
     </div>
 </div>
+</div>
 </body>
 </html>
 
@@ -153,6 +160,7 @@
     html,
     :root {
         --main-txt-color: black;
+        --sub-txt-color: gray;
         --cross-txt-color: red;
 
         --color-primary: #fff494;
@@ -169,17 +177,21 @@
         background-color: #ffffff;
     }
 
-    a {
-        color: var(--main-txt-color);
-        text-decoration: none;
-    }
-
     li {
         list-style: none;
         padding: 6px 10px;
+        margin-bottom: 5px;
+        margin-top: 5px;
         border-bottom: 1px solid #ddd;
+        border-top: 1px solid #ddd;
+        border-radius: 10px;
         border-bottom-color: var(--color-primary-900);
+        border-top-color: var(--color-primary-900);
         background-color: var(--color-primary-600);
+    }
+
+    li:hover {
+        background-color: var(--color-primary-700);
     }
 
     li button {
@@ -190,10 +202,11 @@
         margin: 0;
         font-size: 18px;
         cursor: pointer;
+        transform: scale(1.5);
     }
 
     li button:hover {
-        transform: scale(1.7);
+        transform: scale(2);
     }
 
     li:last-child {
@@ -218,5 +231,9 @@
         background-color: var(--color-primary-900);
         border: var(--color-primary-900);
         color: var(--main-txt-color);
+    }
+
+    .list-date-text {
+        color: var(--sub-txt-color);
     }
 </style>
