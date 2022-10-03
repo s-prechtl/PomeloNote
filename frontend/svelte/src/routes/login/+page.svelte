@@ -83,6 +83,7 @@
         </label>
     </div>
     <button class="w-100 btn btn-lg btn-primary" on:click={handleSubmit}>Sign in</button>
+    <a href="/register" class="opacity-75 d-flex justify-content-center text-center fs-6">No user yet? Register.</a>
     <p class="mt-5 mb-3 text-muted">&copy;2022</p>
 
 </main>
