@@ -1,6 +1,8 @@
 <script lang="ts">
     import logo from "../../resources/images/logo2.svg";
     import {SvelteToast} from "@zerodevx/svelte-toast";
+    import type {Authentication} from "../login/models/authentication";
+    import {createErrorToast} from "../../models/customToasts";
 
     let user: string;
     let password: string;
@@ -11,6 +13,36 @@
      * Handles the button click.
      */
     async function handleSubmit() {
+        console.log("TEST")
+        const endpoint = "http://localhost:1337/api/auth/local/register";
+        const payload = {
+            email: email,
+            password: password,
+            username: user
+        };
+
+        const login = await fetch(endpoint, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+
+        const response: Authentication = await login.json();
+
+        if (response.error != null) {
+            if (response.error.details.errors) {
+                for (const error of response.error.details.errors) {
+                    createErrorToast(error.message);
+                }
+            } else {
+                createErrorToast(response.error.message);
+            }
+        } else {
+            window.location = "/login";
+        }
     }
 </script>
 

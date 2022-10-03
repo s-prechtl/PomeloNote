@@ -45,8 +45,8 @@
                     maxAge: 30 * 24 * 60 * 60,
                     path: '/'
                 })
-                window.location = "/";
             }
+            window.location = "/";
         }
     }
 
