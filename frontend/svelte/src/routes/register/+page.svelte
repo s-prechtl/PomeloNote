@@ -80,6 +80,7 @@
         Register user
         {#if user}: {user} {/if}
     </button>
+    <a href="/login" class="opacity-75 d-flex justify-content-center text-center fs-6">Already registered? Login.</a>
     <p class="mt-5 mb-3 text-muted">&copy;2022</p>
 
 </main>
