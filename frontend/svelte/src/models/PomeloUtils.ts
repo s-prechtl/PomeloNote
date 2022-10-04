@@ -1,3 +1,5 @@
+import {parseCookies} from "nookies";
+
 /**
  * Capitalises first letter of string.
  * @param str
@@ -19,3 +21,14 @@ export async function bearerFetch(endpoint: string, jwt: string, baseUrl: string
         }
     });
 }
+
+
+const getJwtCookie = () => {
+    // @ts-ignore
+    return parseCookies("/").jwt;
+};
+
+/**
+ * JWT Cookie
+ */
+export const jwt: string = getJwtCookie();

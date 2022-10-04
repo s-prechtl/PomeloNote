@@ -1,42 +1,27 @@
 <script lang="ts">
-    import type {Note} from "../types";
+    import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import {parseCookies} from "nookies";
-    import {bearerFetch} from "../models/PomeloUtils";
-    import {User} from "../models/user";
+    import {bearerFetch, jwt} from "../models/PomeloUtils";
 
-    let user: User;
+    const endpoint = "/notes";
 
+    //
+    // //:TODO TEMP!!!
+    // const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}},{\"id\":2,\"attributes\":{\"title\":\"DIO\",\"content\":\"in all CAPS\",\"lastViewed\":\"2022-09-27\"}},{\"id\":3,\"attributes\":{\"title\":\"Eren\",\"content\":\"Jäger\",\"lastViewed\":\"2022-09-27\"}},{\"id\":4,\"attributes\":{\"title\":\"stow\",\"content\":\"Beitn Chef\",\"lastViewed\":\"2022-09-27\"}},{\"id\":5,\"attributes\":{\"title\":\"Wonder of U\",\"content\":\"Umm... so, personally... this is the first time this has happened, so I'm a bit surprised. Only a centimeter away... I mean, I don't think there's ever been someone who's gotten that close to me... without a, you know... calamity occurring. I'm not really... not really sure what happens at one centimeter away... 'cause it's my first time. I don't really understand it either. Seriously. But in the flow of calamity... there's nobody who can attack me. Not a single person. That, I know for sure. Wonder of U.\",\"lastViewed\":\"2022-09-27\"}}]";
+    // //:TODO TEMP!!!
+    //
+    // let notes: Note[] = JSON.parse(jsonStr);
 
+    let notes: Note[];
     onMount(async () => {
-        const jwt = parseCookies("/").jwt;
-        let invalid = !jwt;
-
-        if (!invalid) {
-            const request = await bearerFetch("/users/me", jwt);
-            const response = await  request.json();
-
-            if ('error' in response){
-                invalid = true;
-            } else {
-                user = new User(response);
-            }
-        }
-
-        if (invalid) {
-            window.location = "/login";
-        }
+        const response = await bearerFetch(endpoint, jwt);
+        let data = await response.json();
+        notes = data.data;
+        notes.forEach(note => {
+            note.attributes.lastViewed = new Date(note.attributes.lastViewed);
+        });
+        console.log(notes);
     });
-
-
-
-    //TODO: TEMP!!!
-    const tempJson = "[{\"id\":0,\"title\":\"samc\",\"content\":\"SAAAAAAAAAAMC\",\"lastOpened\":\"2022-09-25T10:45:49.903Z\"},{\"id\":1,\"title\":\"Push\",\"content\":\"Kollege Pusch\",\"lastOpened\":\"2022-09-25T10:50:49.903Z\"},{\"id\":2,\"title\":\"Mike\",\"content\":\"C Meister\",\"lastOpened\":\"2022-09-25T10:09:13.903Z\"},{\"id\":3,\"title\":\"kekw\",\"content\":\"OMEGALUL\",\"lastOpened\":\"2022-09-25T12:03:49.903Z\"}]";
-    //TODO: TEMP!!!
-
-    let notes: Note[] = JSON.parse(tempJson);
-    sortNotesByDate();
-    window.localStorage.setItem("notes", JSON.stringify(notes));
 
     /**
      * Reloads the Notes Listing
@@ -44,23 +29,6 @@
      */
     function reloadNotesListing() {
         notes = notes.filter(i => i === i);
-    }
-
-    /**
-     * Sorts the "notes" Array by the lastOpened Property of a Note
-     */
-    function sortNotesByDate() {
-        notes.sort(function (x, y) {
-            if (x.lastOpened > y.lastOpened) {
-                return 1;
-            }
-
-            if (x.lastOpened < y.lastOpened) {
-                return -1;
-            }
-
-            return 0;
-        });
     }
 
     /**
@@ -72,9 +40,7 @@
         if (newTitle != null && newTitle != '') {
             addNote(newTitle);
             console.log(notes)
-            sortNotesByDate();
             reloadNotesListing();
-            window.localStorage.setItem("notes", JSON.stringify(notes));
         }
     }
 
@@ -82,36 +48,39 @@
      * Adds a new note to the "notes" Array with:
      *  * the latest id + 1 (or 0 if no notes exist)
      *  * no content
+     *  * the current date as the "lastViewed" property
      * @param title The title of the new Note
      */
     function addNote(title: string) {
-        let date = new Date();
-        let newNoteId = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
-        let note: Note = {
+        const date = new Date();
+        const newNoteId: number = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
+        const note: Note = {
             id: newNoteId,
-            title: title,
-            content: "",
-            lastOpened: date.toISOString()
+            attributes: {
+                title: title,
+                content: "",
+                lastViewed: date
+            }
         };
         notes.push(note);
     }
 
     /**
      * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
-     * @param note The note to be removed
+     * @param note The note to be deleted
      */
-    function removeNotePrompt(note) {
+    function deleteNotePrompt(note) {
         const reallyDelete = confirm("Do you really want to delete this Note?");
         if (reallyDelete) {
-            removeNote(note);
+            deleteNote(note);
         }
     }
 
     /**
-     * Removes the note from the "notes" Array
-     * @param note The note to be removed
+     * Deletes the note from the "notes" Array
+     * @param note The note to be deleted
      */
-    function removeNote(note) {
+    function deleteNote(note) {
         notes = notes.filter(i => i !== note);
     }
 
@@ -136,8 +105,8 @@
      * @param note The note the user clicked on
      */
     function onNoteLiClick(note) {
-        window.localStorage.setItem("clickedNoteId", note.id);
         window.location = "/editor";
+        note.attributes.lastViewed = new Date();
     }
 </script>
 
@@ -153,35 +122,44 @@
 </head>
 
 <body>
-<div class="row">
-    <!-- Add Note Button -->
-    <div class="offset-md-7 col-md-1">
-        <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+<div class="container">
+    <div class="row">
+        <!-- Add Note Button -->
+        <div class="offset-md-7 col-md-1">
+            <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+        </div>
     </div>
 
-    <div class="offset-md-4 col-md-4">
-        <!-- Notes listing -->
-        <ul>
-            {#each notes as note}
-                <li on:mouseover={() => handleMouseOverLi(note.id)}
-                    on:mouseout={() => handleMouseOutLi(note.id)}>
-                    <div class="row">
-                        <div class="col-md-10" on:click={() => onNoteLiClick(note)}>
-                        <span>
-                            {note.title} <br/>
-                            {note.lastOpened}
-                        </span>
-                        </div>
-                        <div class="col-md-1">
-                            <button style="display: none" id={"noteButton" + note.id}
-                                    on:click={() => removeNotePrompt(note)}>
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            {/each}
-        </ul>
+    <div class="row">
+        <div class="offset-md-4 col-md-4">
+            {#if notes}
+                <!-- Notes listing -->
+                <ul>
+                    {#each notes as note}
+                        <li on:mouseover={() => handleMouseOverLi(note.id)}
+                            on:mouseout={() => handleMouseOutLi(note.id)}>
+                            <div class="row">
+                                <div class="col-10" on:click={() => onNoteLiClick(note)}>
+                                    <div>
+                                        {note.attributes.title}
+                                    </div>
+                                    <div class="list-date-text">
+                                        {note.attributes.lastViewed.toLocaleDateString()}
+                                    </div>
+                                </div>
+
+                                <div class="col-1">
+                                    <button style="display: none" id={"noteButton" + note.id}
+                                            on:click={() => deleteNotePrompt(note)}>
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+        </div>
     </div>
 </div>
 </body>
@@ -191,6 +169,7 @@
     html,
     :root {
         --main-txt-color: black;
+        --sub-txt-color: gray;
         --cross-txt-color: red;
 
         --color-primary: #fff494;
@@ -207,17 +186,21 @@
         background-color: #ffffff;
     }
 
-    a {
-        color: var(--main-txt-color);
-        text-decoration: none;
-    }
-
     li {
         list-style: none;
         padding: 6px 10px;
+        margin-bottom: 5px;
+        margin-top: 5px;
         border-bottom: 1px solid #ddd;
+        border-top: 1px solid #ddd;
+        border-radius: 10px;
         border-bottom-color: var(--color-primary-900);
+        border-top-color: var(--color-primary-900);
         background-color: var(--color-primary-600);
+    }
+
+    li:hover {
+        background-color: var(--color-primary-700);
     }
 
     li button {
@@ -228,10 +211,11 @@
         margin: 0;
         font-size: 18px;
         cursor: pointer;
+        transform: scale(1.5);
     }
 
     li button:hover {
-        transform: scale(1.7);
+        transform: scale(2);
     }
 
     li:last-child {
@@ -256,5 +240,10 @@
         background-color: var(--color-primary-900);
         border: var(--color-primary-900);
         color: var(--main-txt-color);
+    }
+
+    .list-date-text {
+        color: var(--sub-txt-color);
+        font-size: 0.8314159265358979323846264338rem;
     }
 </style>
