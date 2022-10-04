@@ -1,13 +1,3 @@
-# Creating the svelte project
+# 🚀 Getting started with Svelte
 
-## Create the docker image
-
-``docker build -t svelte .``
-
-## Run the docker container
-
-``docker run --name svelte -dp 5173:5173 svelte``
-
-## Mastercommand for rebuild run etc.
-
-``docker build -t svelte .;docker stop svelte;docker rm svelte; docker run --name svelte -dp 5173:5173 svelte``
+Starting the container: ``docker-compose up --build -d``
