@@ -2,7 +2,7 @@ version: "3"
 services:
   strapi:
     container_name: strapi
-    build: .
+    build: ./backend/strapi
     image: mystrapi:latest
     restart: unless-stopped
     env_file: .env
@@ -17,11 +17,11 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       NODE_ENV: ${NODE_ENV}
     volumes:
-      - ./config:/opt/app/config
-      - ./src:/opt/app/src
-      - ./package.json:/opt/package.json
-      - ./yarn.lock:/opt/yarn.lock # Replace with package-lock.json if using npm
-      - ./.env:/opt/app/.env
+      - ./backend/strapi/config:/opt/app/config
+      - ./backend/strapi/src:/opt/app/src
+      - ./backend/strapi/package.json:/opt/package.json
+      - ./backend/strapi/yarn.lock:/opt/yarn.lock # Replace with package-lock.json if using npm
+      - ./backend/strapi/.env:/opt/app/.env
     ports:
       - "1337:1337"
     networks:
@@ -47,10 +47,21 @@ services:
     networks:
       - strapi
 
+  svelte:
+    container_name: svelte
+    build: ./frontend/svelte
+    image: svelte:latest
+
+    ports:
+      - "80:5173"
+
 volumes:
-    strapi-data:
+  strapi-data:
 
 networks:
   strapi:
     name: Strapi
     driver: bridge
+
+
+
