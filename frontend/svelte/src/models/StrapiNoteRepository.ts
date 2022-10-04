@@ -1,4 +1,4 @@
-import type {Note} from "../types";
+import type {Note} from "./types";
 import {parseCookies} from "nookies";
 import type {NoteRepository} from "./NoteRepository";
 
@@ -35,12 +35,12 @@ export class StrapiNoteRepository implements NoteRepository {
         return await this.getNote(this.currentNoteId);
     }
 
-    public async updateNote(id: number, note: Note): Promise<Note> {
+    public async updateNote(id: number, note: Partial<Note>): Promise<Note> {
         const response = await StrapiNoteRepository.fetchStrapi("/" + id, 'PUT', note);
         return await response.json();
     }
 
-    public async createNote(note: Note): Promise<Note> {
+    public async createNote(note: Partial<Note> & Pick<Note, 'title'>): Promise<Note> {
         const response = await StrapiNoteRepository.fetchStrapi("/", 'POST', note);
         return await response.json();
     }
@@ -49,7 +49,7 @@ export class StrapiNoteRepository implements NoteRepository {
         await StrapiNoteRepository.fetchStrapi("/" + id, 'DELETE');
     }
 
-    private static async fetchStrapi(path: string, method: HttpMethod, body: Note | null = null): Promise<Response> {
+    private static async fetchStrapi(path: string, method: HttpMethod, body: Partial<Note> | null = null): Promise<Response> {
         let requestInit: RequestInit = {
             method: method,
             headers: {
