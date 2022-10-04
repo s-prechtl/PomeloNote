@@ -13,8 +13,7 @@ export class StrapiNoteRepository implements NoteRepository {
         return this.instance;
     }
 
-    private constructor() {
-    }
+    private constructor() {}
 
     private currentNoteId: number | undefined;
     private static apiNoteEndpoint: string = "http://localhost:1337/api/notes"
@@ -64,7 +63,7 @@ export class StrapiNoteRepository implements NoteRepository {
     }
 
     private static mockedGetAuthorizationHeader() {
-        return "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjY0MzU2NzIxLCJleHAiOjE2NjY5NDg3MjF9.SljSS-c4X0Z8SPArwaRg8FiOz15YuAH0Ora4y1you9o"
+        return "bearer TOKEN"
     }
 
     private static getAuthorizationHeader() {
