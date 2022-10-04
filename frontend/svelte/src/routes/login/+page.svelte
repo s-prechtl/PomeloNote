@@ -70,7 +70,7 @@
 
     <div class="form-floating">
         <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value={user}>
-        <label for="floatingInput">Email address</label>
+        <label for="floatingInput">Email address or username</label>
     </div>
     <div class="form-floating">
         <input type="password" class="form-control" id="floatingPassword" placeholder="Password" bind:value={password}>

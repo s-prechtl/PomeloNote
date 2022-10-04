@@ -5,3 +5,6 @@
 
 ### Restart and rebuild Svelte:
 ``docker-compose up --detach --build svelte``
+
+### Restart and rebuild Strapi:
+``docker-compose up --detach --build strapi``
