@@ -13,7 +13,6 @@
      * Handles the button click.
      */
     async function handleSubmit() {
-        console.log("TEST")
         const endpoint = "http://localhost:1337/api/auth/local/register";
         const payload = {
             email: email,
