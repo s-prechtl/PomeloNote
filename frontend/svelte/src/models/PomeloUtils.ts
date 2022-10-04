@@ -24,6 +24,7 @@ export async function bearerFetch(endpoint: string, jwt: string, baseUrl: string
 
 
 const getJwtCookie = () => {
+    // @ts-ignore
     return parseCookies("/").jwt;
 };
 

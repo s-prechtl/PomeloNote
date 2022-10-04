@@ -1,19 +1,27 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
+    import {bearerFetch, jwt} from "../models/PomeloUtils";
 
     const endpoint = "/notes";
 
-    //:TODO TEMP!!!
-    const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}},{\"id\":2,\"attributes\":{\"title\":\"DIO\",\"content\":\"in all CAPS\",\"lastViewed\":\"2022-09-27\"}},{\"id\":3,\"attributes\":{\"title\":\"Eren\",\"content\":\"Jäger\",\"lastViewed\":\"2022-09-27\"}},{\"id\":4,\"attributes\":{\"title\":\"stow\",\"content\":\"Beitn Chef\",\"lastViewed\":\"2022-09-27\"}},{\"id\":5,\"attributes\":{\"title\":\"Wonder of U\",\"content\":\"Umm... so, personally... this is the first time this has happened, so I'm a bit surprised. Only a centimeter away... I mean, I don't think there's ever been someone who's gotten that close to me... without a, you know... calamity occurring. I'm not really... not really sure what happens at one centimeter away... 'cause it's my first time. I don't really understand it either. Seriously. But in the flow of calamity... there's nobody who can attack me. Not a single person. That, I know for sure. Wonder of U.\",\"lastViewed\":\"2022-09-27\"}}]";
-    //:TODO TEMP!!!
+    //
+    // //:TODO TEMP!!!
+    // const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}},{\"id\":2,\"attributes\":{\"title\":\"DIO\",\"content\":\"in all CAPS\",\"lastViewed\":\"2022-09-27\"}},{\"id\":3,\"attributes\":{\"title\":\"Eren\",\"content\":\"Jäger\",\"lastViewed\":\"2022-09-27\"}},{\"id\":4,\"attributes\":{\"title\":\"stow\",\"content\":\"Beitn Chef\",\"lastViewed\":\"2022-09-27\"}},{\"id\":5,\"attributes\":{\"title\":\"Wonder of U\",\"content\":\"Umm... so, personally... this is the first time this has happened, so I'm a bit surprised. Only a centimeter away... I mean, I don't think there's ever been someone who's gotten that close to me... without a, you know... calamity occurring. I'm not really... not really sure what happens at one centimeter away... 'cause it's my first time. I don't really understand it either. Seriously. But in the flow of calamity... there's nobody who can attack me. Not a single person. That, I know for sure. Wonder of U.\",\"lastViewed\":\"2022-09-27\"}}]";
+    // //:TODO TEMP!!!
+    //
+    // let notes: Note[] = JSON.parse(jsonStr);
 
-    let notes: Note[] = JSON.parse(jsonStr);
-    onMount(() => {
-        console.log("snasidbsa dghsasa");
+    let notes: Note[];
+    onMount(async () => {
+        const response = await bearerFetch(endpoint, jwt);
+        let data = await response.json();
+        notes = data.data;
+        notes.forEach(note => {
+            note.attributes.lastViewed = new Date(note.attributes.lastViewed);
+        });
+        console.log(notes);
     });
-
-    console.log(notes);
 
     /**
      * Reloads the Notes Listing
@@ -30,48 +38,49 @@
         let newTitle = prompt('Name of the new Note');
         console.log(notes)
         if (newTitle != null && newTitle != '') {
-            // addNote(newTitle);
+            addNote(newTitle);
             console.log(notes)
             reloadNotesListing();
         }
     }
 
-    // //so a schas
-    // /**
-    //  * Adds a new note to the "notes" Array with:
-    //  *  * the latest id + 1 (or 0 if no notes exist)
-    //  *  * no content
-    //  * @param title The title of the new Note
-    //  */
-    // function addNote(title: string) {
-    //     let date = new Date();
-    //     let newNoteId = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
-    //     let note: Note = {
-    //         id: newNoteId,
-    //         attributes:
-    //         title: title,
-    //         content: "",
-    //         lastOpened: date.toISOString()
-    //     };
-    //     notes.push(note);
-    // }
+    /**
+     * Adds a new note to the "notes" Array with:
+     *  * the latest id + 1 (or 0 if no notes exist)
+     *  * no content
+     *  * the current date as the "lastViewed" property
+     * @param title The title of the new Note
+     */
+    function addNote(title: string) {
+        const date = new Date();
+        const newNoteId: number = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
+        const note: Note = {
+            id: newNoteId,
+            attributes: {
+                title: title,
+                content: "",
+                lastViewed: date
+            }
+        };
+        notes.push(note);
+    }
 
     /**
      * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
-     * @param note The note to be removed
+     * @param note The note to be deleted
      */
-    function removeNotePrompt(note) {
+    function deleteNotePrompt(note) {
         const reallyDelete = confirm("Do you really want to delete this Note?");
         if (reallyDelete) {
-            removeNote(note);
+            deleteNote(note);
         }
     }
 
     /**
-     * Removes the note from the "notes" Array
-     * @param note The note to be removed
+     * Deletes the note from the "notes" Array
+     * @param note The note to be deleted
      */
-    function removeNote(note) {
+    function deleteNote(note) {
         notes = notes.filter(i => i !== note);
     }
 
@@ -97,7 +106,7 @@
      */
     function onNoteLiClick(note) {
         window.location = "/editor";
-        note.attributes.lastViewed = new Date().toISOString();
+        note.attributes.lastViewed = new Date();
     }
 </script>
 
@@ -114,44 +123,44 @@
 
 <body>
 <div class="container">
-<div class="row">
-    <!-- Add Note Button -->
-    <div class="offset-md-7 col-md-1">
-        <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+    <div class="row">
+        <!-- Add Note Button -->
+        <div class="offset-md-7 col-md-1">
+            <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="offset-md-4 col-md-4">
-        {#if notes.length !== 0}
-            <!-- Notes listing -->
-            <ul>
-                {#each notes as note}
-                    <li on:mouseover={() => handleMouseOverLi(note.id)}
-                        on:mouseout={() => handleMouseOutLi(note.id)}>
-                        <div class="row">
-                            <div class="col-10" on:click={() => onNoteLiClick(note)}>
-                                <div>
-                                    {note.attributes.title}
+    <div class="row">
+        <div class="offset-md-4 col-md-4">
+            {#if notes}
+                <!-- Notes listing -->
+                <ul>
+                    {#each notes as note}
+                        <li on:mouseover={() => handleMouseOverLi(note.id)}
+                            on:mouseout={() => handleMouseOutLi(note.id)}>
+                            <div class="row">
+                                <div class="col-10" on:click={() => onNoteLiClick(note)}>
+                                    <div>
+                                        {note.attributes.title}
+                                    </div>
+                                    <div class="list-date-text">
+                                        {note.attributes.lastViewed.toLocaleDateString()}
+                                    </div>
                                 </div>
-                                <div class="list-date-text">
-                                    {note.attributes.lastViewed}
+
+                                <div class="col-1">
+                                    <button style="display: none" id={"noteButton" + note.id}
+                                            on:click={() => deleteNotePrompt(note)}>
+                                        <i class="bi bi-x"></i>
+                                    </button>
                                 </div>
                             </div>
-
-                            <div class="col-1">
-                                <button style="display: none" id={"noteButton" + note.id}
-                                        on:click={() => removeNotePrompt(note)}>
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+        </div>
     </div>
-</div>
 </div>
 </body>
 </html>
@@ -235,5 +244,6 @@
 
     .list-date-text {
         color: var(--sub-txt-color);
+        font-size: 0.8314159265358979323846264338rem;
     }
 </style>
