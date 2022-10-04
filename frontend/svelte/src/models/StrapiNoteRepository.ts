@@ -1,4 +1,4 @@
-import type {Note} from "../types";
+import type {Note} from "./types";
 import {parseCookies} from "nookies";
 import type {NoteRepository} from "./NoteRepository";
 
@@ -53,7 +53,7 @@ export class StrapiNoteRepository implements NoteRepository {
         let requestInit: RequestInit = {
             method: method,
             headers: {
-                authorization: StrapiNoteRepository.mockedGetAuthorizationHeader()
+                authorization: StrapiNoteRepository.getAuthorizationHeader()
             }
         };
         if (body) {

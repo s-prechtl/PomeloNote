@@ -2,8 +2,11 @@
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
     import {bearerFetch, jwt} from "../models/PomeloUtils";
+    import type {NoteRepository} from "../models/NoteRepository";
+    import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
 
     const endpoint = "/notes";
+    const noteRepo: NoteRepository = StrapiNoteRepository.getInstance();
 
     //
     // //:TODO TEMP!!!
@@ -14,11 +17,9 @@
 
     let notes: Note[];
     onMount(async () => {
-        const response = await bearerFetch(endpoint, jwt);
-        let data = await response.json();
-        notes = data.data;
+        notes = await noteRepo.getNotes();
         notes.forEach(note => {
-            note.attributes.lastViewed = new Date(note.attributes.lastViewed);
+            note.lastViewed = new Date(note.lastViewed);
         });
         console.log(notes);
     });
@@ -53,16 +54,13 @@
      */
     function addNote(title: string) {
         const date = new Date();
-        const newNoteId: number = (notes.length == 0) ? 0 : notes[notes.length - 1].id + 1
-        const note: Note = {
-            id: newNoteId,
-            attributes: {
-                title: title,
-                content: "",
-                lastViewed: date
-            }
+        const note: Partial<Note> = {
+            title: title,
+            lastViewed: date
         };
-        notes.push(note);
+
+        // notes.push(note);
+        // noteRepo.createNote(note);
     }
 
     /**
@@ -82,6 +80,7 @@
      */
     function deleteNote(note) {
         notes = notes.filter(i => i !== note);
+        noteRepo.deleteNote(note.id);
     }
 
     /**
@@ -106,7 +105,7 @@
      */
     function onNoteLiClick(note) {
         window.location = "/editor";
-        note.attributes.lastViewed = new Date();
+        note.lastViewed = new Date();
     }
 </script>
 
@@ -141,10 +140,10 @@
                             <div class="row">
                                 <div class="col-10" on:click={() => onNoteLiClick(note)}>
                                     <div>
-                                        {note.attributes.title}
+                                        {note.title}
                                     </div>
                                     <div class="list-date-text">
-                                        {note.attributes.lastViewed.toLocaleDateString()}
+                                        {note.lastViewed.toLocaleDateString()}
                                     </div>
                                 </div>
 
