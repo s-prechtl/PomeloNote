@@ -66,7 +66,7 @@ export class StrapiNoteRepository implements NoteRepository {
         return "bearer TOKEN"
     }
 
-    private static getAuthorizationHeader() {
+    static getAuthorizationHeader() {
         const jwt = parseCookies().jwt;
         return `bearer ${jwt}`
     }

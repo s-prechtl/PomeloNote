@@ -1,9 +1,9 @@
 <script lang="ts">
     import {setCookie} from "nookies";
-    import type {Authentication} from "./models/authentication";
-    import { SvelteToast } from '@zerodevx/svelte-toast'
-    import {createErrorToast} from "../../models/customToasts";
+    import {SvelteToast} from '@zerodevx/svelte-toast'
     import logo from "../../resources/images/logo2.svg";
+    import {handleErrorsFromResponseWithToast} from "../../models/PomeloUtils";
+    import {StrapiUserRepo} from "../../models/repos/user/StrapiUserRepo";
 
     let user: string;
     let password: string;
@@ -14,31 +14,12 @@
      * Handles the button click.
      */
     async function handleSubmit() {
-        const endpoint = "http://localhost:1337/api/auth/local";
-        const payload = {
-            identifier: user,
-            password: password
-        };
+        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance();
 
-        const login = await fetch(endpoint, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
+        const response = await userRepo.loginUser(user, password);
 
-        const response: Authentication = await login.json();
-
-        if (response.error != null){
-            if (response.error.details.errors){
-                for (const error of response.error.details.errors) {
-                    createErrorToast(error.message);
-                }
-            } else{
-                createErrorToast(response.error.message);
-            }
+        if (response.error != null) {
+            handleErrorsFromResponseWithToast(response);
         } else {
             if (rememberMe) {
                 setCookie(null, 'jwt', response.jwt, {
@@ -56,34 +37,34 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>PomeloNote | Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" rel="stylesheet">
 </head>
 
 <body>
 <main class="form-signin w-100 m-auto">
 
-    <img class="img-fluid" src="{logo}" alt="Logo">
+    <img alt="Logo" class="img-fluid" src="{logo}">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value={user}>
+        <input bind:value={user} class="form-control" id="floatingInput" placeholder="name@example.com" type="email">
         <label for="floatingInput">Email address or username</label>
     </div>
     <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" bind:value={password}>
+        <input bind:value={password} class="form-control" id="floatingPassword" placeholder="Password" type="password">
         <label for="floatingPassword">Password</label>
     </div>
 
     <div class="checkbox mb-3">
         <label>
-            <input type="checkbox" value="rememberMe" bind:checked={rememberMe}> Remember me
+            <input bind:checked={rememberMe} type="checkbox" value="rememberMe"> Remember me
         </label>
     </div>
     <button class="w-100 btn btn-lg btn-primary" on:click={handleSubmit}>Sign in</button>
-    <a href="/register" class="opacity-75 d-flex justify-content-center text-center fs-6">No user yet? Register.</a>
+    <a class="opacity-75 d-flex justify-content-center text-center fs-6" href="/register">No user yet? Register.</a>
     <p class="mt-5 mb-3 text-muted">&copy;2022</p>
 
 </main>
@@ -126,7 +107,7 @@
         border-top-right-radius: 0;
     }
 
-    .img-fluid{
+    .img-fluid {
         margin-bottom: 15px;
     }
 </style>

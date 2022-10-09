@@ -1,7 +1,8 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import {bearerFetch, jwt} from "../models/PomeloUtils";
+    import {bearerFetch} from "../models/PomeloUtils";
+    import {StrapiUserRepo} from "../models/repos/user/StrapiUserRepo";
 
     const endpoint = "/notes";
 
@@ -14,7 +15,7 @@
 
     let notes: Note[];
     onMount(async () => {
-        const response = await bearerFetch(endpoint, jwt);
+        const response = await bearerFetch(endpoint, StrapiUserRepo.getInstance().currentUser.jwt);
         let data = await response.json();
         notes = data.data;
         notes.forEach(note => {
@@ -114,11 +115,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>PomeloNote | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" rel="stylesheet">
 </head>
 
 <body>
