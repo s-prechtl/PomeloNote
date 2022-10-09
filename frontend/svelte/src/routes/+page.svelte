@@ -1,11 +1,9 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import {bearerFetch, jwt} from "../models/PomeloUtils";
     import type {NoteRepository} from "../models/NoteRepository";
     import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
 
-    const endpoint = "/notes";
     const noteRepo: NoteRepository = StrapiNoteRepository.getInstance();
 
     //
