@@ -19,12 +19,12 @@ export class StrapiNoteRepository implements NoteRepository {
     private static apiNoteEndpoint: string = "http://localhost:1337/api/notes"
 
     public async getNotes(): Promise<Note[]>{
-        const response = await StrapiNoteRepository.fetchStrapi("/", 'GET');
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/", 'GET');
         return await response.json();
     }
 
     public async getNote(id: number): Promise<Note>{
-        const response = await StrapiNoteRepository.fetchStrapi("/" + id, 'GET');
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'GET');
         return await response.json();
     }
 
@@ -36,20 +36,20 @@ export class StrapiNoteRepository implements NoteRepository {
     }
 
     public async updateNote(id: number, note: Partial<Note>): Promise<Note> {
-        const response = await StrapiNoteRepository.fetchStrapi("/" + id, 'PUT', note);
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'PUT', note);
         return await response.json();
     }
 
     public async createNote(note: Partial<Note> & Pick<Note, 'title'>): Promise<Note> {
-        const response = await StrapiNoteRepository.fetchStrapi("/", 'POST', note);
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/", 'POST', note);
         return await response.json();
     }
 
     public async deleteNote(id: number): Promise<void> {
-        await StrapiNoteRepository.fetchStrapi("/" + id, 'DELETE');
+        await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'DELETE');
     }
 
-    private static async fetchStrapi(path: string, method: HttpMethod, body: Partial<Note> | null = null): Promise<Response> {
+    private static async fetchStrapiNoteEndpoint(path: string, method: HttpMethod, body: Partial<Note> | null = null): Promise<Response> {
         let requestInit: RequestInit = {
             method: method,
             headers: {
