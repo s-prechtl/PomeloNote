@@ -1,5 +1,6 @@
 'use strict';
 //move to utils!
+
 function getNoteIdFromUrl(url) {
   return Number(url.split("/").at(-1));
 }
@@ -43,7 +44,6 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
-    console.log(authorized)
     if (authorized) {
       entry = await strapi.entityService.update(noteUid, noteId, {
         data: {
@@ -68,17 +68,36 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
-    let allowed;
+    let allPreviousOwnersKept = false;
     if (requestBody.data.hasOwnProperty("owners")) {
-      allowed = entry.owners.every(owner => requestBody.data.owners.includes(owner));
+      allPreviousOwnersKept = entry.owners.every(owner => requestBody.data.owners.includes(owner));
     }
     if (!authorized) {
       ctx.response.status = 403;
-    } else if (!allowed) {
+    } else if (!allPreviousOwnersKept) {
       ctx.response.status = 400;
     } else {
       return super.update(ctx);
     }
+  },
+  /**
+   * Creates a new note, automatically sets owners to the user making the request and lastViewed
+   * @param ctx
+   * @returns {Promise<ctx>}
+   */
+  async create(ctx) {
+    const userId = ctx.state.user.id;
+    const requestBody = ctx.request.body;
+    const response = await strapi.entityService.create(noteUid, {
+      data: {
+        title: requestBody.data.title,
+        content: requestBody.data.content,
+        lastViewed: Date.now(),
+        owners: [userId],
+        publishedAt: Date.now()
+      }
+    });
+    return response;
   },
   /**
    * Deletes user from note owners. If note has no owners anymore, deletes note.
