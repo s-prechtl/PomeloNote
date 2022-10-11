@@ -8,10 +8,6 @@
 
     onMount(async () => {
         notes = await noteRepo.getNotes();
-        notes.forEach(note => {
-            note.lastViewed = new Date(note.lastViewed);
-        });
-        console.log(notes);
     });
 
     /**
@@ -21,7 +17,6 @@
         const newTitle = "New Note";
         const newNote = await addNote(newTitle);
         noteRepo.currentNoteId = newNote.id;
-        console.log(newNote.id);
         window.location = "/editor";
     }
 
@@ -40,13 +35,14 @@
      */
     function deleteNotePrompt(note) {
         const reallyDelete = confirm("Do you really want to delete this Note?");
+        //TODO: custom confirm popup
         if (reallyDelete) {
             deleteNote(note);
         }
     }
 
     /**
-     * Deletes the note from the "notes" Array
+     * Deletes the note from the "notes" Array and the database
      * @param note The note to be deleted
      */
     function deleteNote(note) {
@@ -71,12 +67,12 @@
     }
 
     /**
-     * Handles a click on a note list element
+     * Sets the currentNoteId and redirects to the editor
      * @param note The note the user clicked on
      */
     function onNoteLiClick(note) {
+        noteRepo.currentNoteId = note.id;
         window.location = "/editor";
-        note.lastViewed = new Date();
     }
 </script>
 
@@ -102,7 +98,7 @@
 
     <div class="row">
         <div class="offset-md-4 col-md-4">
-            {#if notes}
+            {#if notes?.length > 0}
                 <!-- Notes listing -->
                 <ul>
                     {#each notes as note}

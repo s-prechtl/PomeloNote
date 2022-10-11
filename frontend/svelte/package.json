@@ -22,7 +22,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"bootstrap-icons": "^1.9.1",
 		"nookies": "^2.5.2",
-		"bootstrap-icons": "^1.9.1"
+		"webworker": "^0.8.4"
 	}
 }
