@@ -69,7 +69,7 @@
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value={user}>
+        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value={user}>
         <label for="floatingInput">Email address or username</label>
     </div>
     <div class="form-floating">
@@ -91,42 +91,13 @@
 </body>
 </html>
 
-
 <style>
-    html,
-    body {
-        height: 100%;
-    }
-
-    body {
-        align-items: center;
-        padding-top: 40px;
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-    }
-
-    .form-signin {
-        max-width: 330px;
-        padding: 15px;
-    }
-
-    .form-signin .form-floating:focus-within {
-        z-index: 2;
-    }
+    @import "../../userInput.css";
+    @import "../../customBootstrap.css";
 
     .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-
-    .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-    }
-
-    .img-fluid{
-        margin-bottom: 15px;
+        margin-bottom: -1px !important;
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
     }
 </style>
