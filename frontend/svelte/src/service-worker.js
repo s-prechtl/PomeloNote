@@ -1,4 +1,3 @@
-
 /// <reference lib="webworker" />
 
 import { build, files, version } from '$service-worker';
@@ -77,6 +76,3 @@ worker.addEventListener('fetch', (event) => {
         );
     }
 });
-
-
-

@@ -8,6 +8,9 @@
 
     onMount(async () => {
         notes = await noteRepo.getNotes();
+        notes.forEach(note => {
+            note.lastViewed = new Date(note.lastViewed);
+        });
     });
 
     /**
