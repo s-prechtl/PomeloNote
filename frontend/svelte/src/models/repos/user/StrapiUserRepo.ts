@@ -12,7 +12,7 @@ export class StrapiUserRepo implements UserRepository {
             this.instance = new StrapiUserRepo();
             this.instance.setup().then(() => {
                 if (!this.instance.currentUser?.jwt) {
-                    window.location.href = "/login";
+                    //window.location.href = "/login";
                 }
             });
         }
@@ -26,7 +26,7 @@ export class StrapiUserRepo implements UserRepository {
 
     private static api: string = "http://localhost:1337/api"
 
-    private static apiUserEndpoint: string = StrapiUserRepo.api + "/local/auth"
+    private static apiUserEndpoint: string = StrapiUserRepo.api + "/auth/local"
 
     /**
      * Sets the current user.
@@ -66,7 +66,7 @@ export class StrapiUserRepo implements UserRepository {
         };
         if (authorization){
             requestInit["headers"] = {
-                authorization: StrapiNoteRepository.getAuthorizationHeader(),
+                authorization: StrapiNoteRepository.getAuthorizationHeader() ?? '',
             }
         }
         if (body) {
