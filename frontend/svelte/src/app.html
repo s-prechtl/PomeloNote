@@ -4,9 +4,16 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="../src/resources/images/logo2.svg" />
 		<meta name="viewport" content="width=device-width" />
+		<link rel="manifest" href="../static/manifest.json">
 		%sveltekit.head%
 	</head>
 	<body>
 		<div>%sveltekit.body%</div>
+
+		<script>
+			if('serviceworker' in navigator){
+				navigator.serviceworker.register('./service-worker.js');
+			}
+		</script>
 	</body>
 </html>

@@ -72,43 +72,13 @@
 </body>
 </html>
 
-
 <style>
-    @import "src";
-    html,
-    body {
-        height: 100%;
-    }
-
-    body {
-        align-items: center;
-        padding-top: 40px;
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-    }
-
-    .form-signin {
-        max-width: 330px;
-        padding: 15px;
-    }
-
-    .form-signin .form-floating:focus-within {
-        z-index: 2;
-    }
+    @import "../../userInput.css";
+    @import "../../customBootstrap.css";
 
     .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-
-    .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-    }
-
-    .img-fluid {
-        margin-bottom: 15px;
+        margin-bottom: -1px !important;
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
     }
 </style>

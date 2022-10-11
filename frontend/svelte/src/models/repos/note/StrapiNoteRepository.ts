@@ -15,45 +15,49 @@ export class StrapiNoteRepository implements NoteRepository {
 
     private constructor() {}
 
-    private currentNoteId: number | undefined;
+    private _currentNoteId: number | undefined;
     private static apiNoteEndpoint: string = "http://localhost:1337/api/notes"
 
+    public set currentNoteId(value: number | undefined) {
+        this._currentNoteId = value;
+    }
+
     public async getNotes(): Promise<Note[]>{
-        const response = await StrapiNoteRepository.fetchStrapi("/", 'GET');
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/", 'GET');
         return await response.json();
     }
 
     public async getNote(id: number): Promise<Note>{
-        const response = await StrapiNoteRepository.fetchStrapi("/" + id, 'GET');
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'GET');
         return await response.json();
     }
 
     public async getCurrentNote(): Promise<Note | void> {
-        if (this.currentNoteId === null || this.currentNoteId === undefined) {
+        if (this._currentNoteId === null || this._currentNoteId === undefined) {
             return;
         }
-        return await this.getNote(this.currentNoteId);
+        return await this.getNote(this._currentNoteId);
     }
 
-    public async updateNote(id: number, note: Note): Promise<Note> {
-        const response = await StrapiNoteRepository.fetchStrapi("/" + id, 'PUT', note);
+    public async updateNote(id: number, note: Partial<Note>): Promise<Note> {
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'PUT', note);
         return await response.json();
     }
 
-    public async createNote(note: Note): Promise<Note> {
-        const response = await StrapiNoteRepository.fetchStrapi("/", 'POST', note);
+    public async createNote(note: Partial<Note> & Pick<Note, 'title'>): Promise<Note> {
+        const response = await StrapiNoteRepository.fetchStrapiNoteEndpoint("/", 'POST', note);
         return await response.json();
     }
 
     public async deleteNote(id: number): Promise<void> {
-        await StrapiNoteRepository.fetchStrapi("/" + id, 'DELETE');
+        await StrapiNoteRepository.fetchStrapiNoteEndpoint("/" + id, 'DELETE');
     }
 
-    private static async fetchStrapi(path: string, method: HttpMethod, body: Note | null = null): Promise<Response> {
+    private static async fetchStrapiNoteEndpoint(path: string, method: HttpMethod, body: Partial<Note> | null = null): Promise<Response> {
         let requestInit: RequestInit = {
             method: method,
             headers: {
-                authorization: StrapiNoteRepository.mockedGetAuthorizationHeader()
+                authorization: StrapiNoteRepository.getAuthorizationHeader()
             }
         };
         if (body) {

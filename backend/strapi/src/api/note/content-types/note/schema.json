@@ -22,7 +22,8 @@
     "owners": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "plugin::users-permissions.user"
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "notes"
     },
     "lastViewed": {
       "type": "datetime",
