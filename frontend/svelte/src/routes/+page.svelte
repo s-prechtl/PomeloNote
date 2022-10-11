@@ -1,19 +1,11 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import type {NoteRepository} from "../models/NoteRepository";
     import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
 
-    const noteRepo: NoteRepository = StrapiNoteRepository.getInstance();
-
-    //
-    // //:TODO TEMP!!!
-    // const jsonStr = "[{\"id\":0,\"attributes\":{\"title\":\"mike\",\"content\":\"C Moasta\",\"lastViewed\":\"2022-09-27\"}},{\"id\":1,\"attributes\":{\"title\":\"samc\",\"content\":\"drupal gott\",\"lastViewed\":\"1999-09-09\"}},{\"id\":2,\"attributes\":{\"title\":\"DIO\",\"content\":\"in all CAPS\",\"lastViewed\":\"2022-09-27\"}},{\"id\":3,\"attributes\":{\"title\":\"Eren\",\"content\":\"Jäger\",\"lastViewed\":\"2022-09-27\"}},{\"id\":4,\"attributes\":{\"title\":\"stow\",\"content\":\"Beitn Chef\",\"lastViewed\":\"2022-09-27\"}},{\"id\":5,\"attributes\":{\"title\":\"Wonder of U\",\"content\":\"Umm... so, personally... this is the first time this has happened, so I'm a bit surprised. Only a centimeter away... I mean, I don't think there's ever been someone who's gotten that close to me... without a, you know... calamity occurring. I'm not really... not really sure what happens at one centimeter away... 'cause it's my first time. I don't really understand it either. Seriously. But in the flow of calamity... there's nobody who can attack me. Not a single person. That, I know for sure. Wonder of U.\",\"lastViewed\":\"2022-09-27\"}}]";
-    // //:TODO TEMP!!!
-    //
-    // let notes: Note[] = JSON.parse(jsonStr);
-
+    const noteRepo: StrapiNoteRepository = StrapiNoteRepository.getInstance();
     let notes: Note[];
+
     onMount(async () => {
         notes = await noteRepo.getNotes();
         notes.forEach(note => {
@@ -23,42 +15,23 @@
     });
 
     /**
-     * Reloads the Notes Listing
-     * (by doing something very intelligent)
+     * Adds a Note with the title "New Note" and redirects to editor
      */
-    function reloadNotesListing() {
-        notes = notes.filter(i => i === i);
+    async function addNoteHandler() {
+        const newTitle = "New Note";
+        const newNote = await addNote(newTitle);
+        noteRepo.currentNoteId = newNote.id;
+        console.log(newNote.id);
+        window.location = "/editor";
     }
 
     /**
-     * Gives the user a prompt to input the new title of the note and creates it if the title is valid
-     */
-    function addNotePrompt() {
-        let newTitle = prompt('Name of the new Note');
-        console.log(notes)
-        if (newTitle != null && newTitle != '') {
-            addNote(newTitle);
-            console.log(notes)
-            reloadNotesListing();
-        }
-    }
-
-    /**
-     * Adds a new note to the "notes" Array with:
-     *  * the latest id + 1 (or 0 if no notes exist)
-     *  * no content
-     *  * the current date as the "lastViewed" property
+     * Adds a new note to the Database
      * @param title The title of the new Note
+     * @return The created Note Object
      */
-    function addNote(title: string) {
-        const date = new Date();
-        const note: Partial<Note> = {
-            title: title,
-            lastViewed: date
-        };
-
-        // notes.push(note);
-        // noteRepo.createNote(note);
+    async function addNote(title: string) : Promise<Note> {
+        return await noteRepo.createNote({title: title,});
     }
 
     /**
@@ -123,7 +96,7 @@
     <div class="row">
         <!-- Add Note Button -->
         <div class="offset-md-7 col-md-1">
-            <button class="btn btn-primary" on:click={() => addNotePrompt()}>Add Note</button>
+            <button class="btn btn-primary" on:click={() => addNoteHandler()}>Add Note</button>
         </div>
     </div>
 

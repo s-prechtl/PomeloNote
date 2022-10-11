@@ -87,7 +87,8 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
    */
   async create(ctx) {
     const userId = ctx.state.user.id;
-    const requestBody = ctx.request.body;
+    const requestBody = JSON.parse(ctx.request.body);
+    console.log(requestBody);
     const response = await strapi.entityService.create(noteUid, {
       data: {
         title: requestBody.data.title,
