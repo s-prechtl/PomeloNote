@@ -1,0 +1,29 @@
+
+html,
+:root {
+    --main-txt-color: black;
+    --cross-txt-color: red;
+
+    --color-primary: #fff494;
+    --color-primary-600: #fff17a;
+    --color-primary-700: #ffec47;
+    --color-primary-800: #ffe714;
+    --color-primary-900: #e0c900;
+}
+
+.btn-primary {
+    background-color: var(--color-primary-800) !important;
+    border: var(--color-primary-800) !important;
+    color: var(--main-txt-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-900) !important;
+    border: var(--color-primary-900) !important;
+    color: var(--main-txt-color) !important;
+}
+
+.btn-primary:disabled {
+    background-color: var(--color-primary-700) !important;
+    border: var(--color-primary-700) !important;
+}
