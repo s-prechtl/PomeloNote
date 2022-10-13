@@ -64,13 +64,24 @@ export class StrapiUserRepo implements UserRepository {
         let requestInit: RequestInit = {
             method: method,
         };
-        if (authorization){
+        if (authorization && body) {
+            requestInit["headers"] = {
+                authorization: StrapiNoteRepository.getAuthorizationHeader() ?? '',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        } else if (authorization){
             requestInit["headers"] = {
                 authorization: StrapiNoteRepository.getAuthorizationHeader() ?? '',
             }
+        } else if (body) {
+            requestInit["headers"] = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         }
         if (body) {
-            requestInit["body"] = JSON.stringify({data: body});
+            requestInit["body"] = JSON.stringify(body)
         }
         return await fetch((customPath) ? (this.api + customPath + path) : StrapiUserRepo.apiUserEndpoint + path, requestInit);
     }
