@@ -1,6 +1,6 @@
 <script lang="ts">
     import type {Note} from "../../models/types";
-    import {StrapiNoteRepository} from "../../models/StrapiNoteRepository";
+    import {StrapiNoteRepository} from "../../models/repos/note/StrapiNoteRepository";
     import {onMount} from "svelte";
     import {currentNoteId} from "../../stores";
 
