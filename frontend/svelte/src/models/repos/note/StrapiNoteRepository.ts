@@ -1,7 +1,7 @@
 import type {Note} from "../../types";
 import {parseCookies} from "nookies";
 import type {NoteRepository} from "./NoteRepository";
-import {currentNoteId} from "../stores";
+import {currentNoteId} from "../../../stores";
 
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
