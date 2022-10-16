@@ -1,4 +1,4 @@
-import type {Note} from "./types";
+import type {Note} from "../../types";
 import {parseCookies} from "nookies";
 import type {NoteRepository} from "./NoteRepository";
 import {currentNoteId} from "../stores";
@@ -78,8 +78,8 @@ export class StrapiNoteRepository implements NoteRepository {
         return "bearer TOKEN"
     }
 
-    private static getAuthorizationHeader() {
-        const jwt = parseCookies().jwt;
+    static getAuthorizationHeader() {
+        const jwt = parseCookies('/').jwt;
         return `bearer ${jwt}`
     }
 }
