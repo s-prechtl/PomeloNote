@@ -63,22 +63,26 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
   async update(ctx) {
     const noteId = getNoteIdFromUrl(ctx.request.url)
     const userId = ctx.state.user.id;
-    const requestBody = ctx.request.body;
+    const requestBody = JSON.parse(ctx.request.body);
+    console.log(JSON.stringify(requestBody, null, 2))
     const entry = await strapi.entityService.findOne(noteUid, noteId, {
       populate: ['owners'],
     });
     const authorized = entry.owners.some(owner => owner.id === userId)
-    let allPreviousOwnersKept = false;
+    let allPreviousOwnersKept = true;
     if (requestBody.data.hasOwnProperty("owners")) {
       allPreviousOwnersKept = entry.owners.every(owner => requestBody.data.owners.includes(owner));
     }
+    console.log({
+      "auth": authorized,
+      "allprev": allPreviousOwnersKept,
+    })
     if (!authorized) {
       ctx.response.status = 403;
     } else if (!allPreviousOwnersKept) {
       ctx.response.status = 400;
-    } else {
-      return super.update(ctx);
     }
+    return await strapi.entityService.update(noteUid, noteId, requestBody);
   },
   /**
    * Creates a new note, automatically sets owners to the user making the request and lastViewed
