@@ -1,12 +1,14 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
+    import {StrapiNoteRepository} from "../models/repos/note/StrapiNoteRepository";
+    import {StrapiUserRepo} from "../models/repos/user/StrapiUserRepo";
 
     const noteRepo: StrapiNoteRepository = StrapiNoteRepository.getInstance();
     let notes: Note[];
 
     onMount(async () => {
+        StrapiUserRepo.getInstance();
         notes = await noteRepo.getNotes();
         notes.forEach(note => {
             note.lastViewed = new Date(note.lastViewed);

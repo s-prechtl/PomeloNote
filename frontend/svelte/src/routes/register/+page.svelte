@@ -13,7 +13,7 @@
      * Handles the button click.
      */
     async function handleSubmit() {
-        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance();
+        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance(false);
 
         const response = await userRepo.registerUser(email, user, password);
 

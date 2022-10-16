@@ -14,7 +14,7 @@
      * Handles the button click.
      */
     async function handleSubmit() {
-        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance();
+        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance(false);
 
         const response = await userRepo.loginUser(user, password);
 
@@ -50,7 +50,7 @@
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
     <div class="form-floating">
-        <input bind:value={user} class="form-control" id="floatingInput" placeholder="name@example.com" type="email">
+        <input bind:value={user} class="form-control" id="floatingInput" placeholder="name@example.com" type="text">
         <label for="floatingInput">Email address or username</label>
     </div>
     <div class="form-floating">
@@ -75,10 +75,4 @@
 <style>
     @import "../../userInput.css";
     @import "../../customBootstrap.css";
-
-    .form-signin input[type="email"] {
-        margin-bottom: -1px !important;
-        border-bottom-right-radius: 0 !important;
-        border-bottom-left-radius: 0 !important;
-    }
 </style>

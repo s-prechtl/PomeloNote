@@ -1,25 +1,26 @@
 import type {UserRepository} from "./UserRepository";
 import type {Authentication} from "../../authentication";
-import {parseCookies} from "nookies";
 import type {HttpMethod} from "@sveltejs/kit/types/private";
 import {StrapiNoteRepository} from "../note/StrapiNoteRepository";
+import {error} from "@sveltejs/kit";
+import {User} from "../../user";
 
 export class StrapiUserRepo implements UserRepository {
     private static instance: StrapiUserRepo;
 
-    public static getInstance(): StrapiUserRepo {
+    public static getInstance(verification: boolean = true): StrapiUserRepo {
         if (this.instance === undefined || this.instance === null) {
             this.instance = new StrapiUserRepo();
-            this.instance.setup().then(() => {
-                if (!this.instance.currentUser?.jwt) {
-                    //window.location.href = "/login";
+            this.instance.verify().then(() => {
+                if (verification && !this.instance.verified) {
+                    window.location.href = "/login";
                 }
             });
         }
         return this.instance;
     }
 
-    public currentUser?: Authentication;
+    private verified: boolean = false;
 
     private constructor() {
     }
@@ -29,14 +30,18 @@ export class StrapiUserRepo implements UserRepository {
     private static apiUserEndpoint: string = StrapiUserRepo.api + "/auth/local"
 
     /**
-     * Sets the current user.
+     * Verifies the current users jwt.
      * @private
      */
-    private async setup() {
-        this.currentUser = await this.getMe(parseCookies().jwt);
+    private async verify() {
+        this.verified = false;
+        let result = await this.getMe();
+        if (!result.error) {
+            this.verified = true;
+        }
     }
 
-    async getMe(jwt: string): Promise<Authentication> {
+    async getMe(): Promise<Authentication> {
         const response = await StrapiUserRepo.fetchStrapi("/me", "GET", null, true, "/users")
         return await response.json();
     }
@@ -70,7 +75,7 @@ export class StrapiUserRepo implements UserRepository {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        } else if (authorization){
+        } else if (authorization) {
             requestInit["headers"] = {
                 authorization: StrapiNoteRepository.getAuthorizationHeader() ?? '',
             }
