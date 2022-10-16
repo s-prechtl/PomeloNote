@@ -2,6 +2,7 @@
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
     import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
+    import {Content, Modal, Trigger} from "sv-popup";
 
     const noteRepo: StrapiNoteRepository = StrapiNoteRepository.getInstance();
     let notes: Note[];
@@ -28,20 +29,8 @@
      * @param title The title of the new Note
      * @return The created Note Object
      */
-    async function addNote(title: string) : Promise<Note> {
+    async function addNote(title: string): Promise<Note> {
         return await noteRepo.createNote({title: title,});
-    }
-
-    /**
-     * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
-     * @param note The note to be deleted
-     */
-    function deleteNotePrompt(note) {
-        const reallyDelete = confirm("Do you really want to delete this Note?");
-        //TODO: custom confirm popup
-        if (reallyDelete) {
-            deleteNote(note);
-        }
     }
 
     /**
@@ -77,6 +66,12 @@
         noteRepo.currentNoteId = note.id;
         window.location = "/editor";
     }
+
+    function closeModal(){
+        closeModalBool = true;
+    }
+
+    let closeModalBool = false;
 </script>
 
 
@@ -92,6 +87,7 @@
 
 <body>
 <div class="container">
+
     <div class="row">
         <!-- Add Note Button -->
         <div class="offset-md-7 col-md-1">
@@ -118,10 +114,34 @@
                                 </div>
 
                                 <div class="col-1">
-                                    <button style="display: none" id={"noteButton" + note.id}
-                                            on:click={() => deleteNotePrompt(note)}>
-                                        <i class="bi bi-x"></i>
-                                    </button>
+                                    <!-- Delete Note Popup -->
+                                    <Modal basic small={true} button={false} close={closeModalBool}> <!-- TODO: how to close properly?! no idea -->
+                                        <Content>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h5>Do you really want to delete the "{note.title}" note?</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 offset-2">
+                                                    <button class="btn btn-primary"
+                                                            on:click={() => deleteNote(note)}
+                                                            on:click={() => closeModal()}>
+                                                        <b>Yes</b>
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 offset-2">
+                                                    <button class="btn btn-primary" autofocus
+                                                            on:click={() => closeModal()}>
+                                                        <b>No</b>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Content>
+                                        <Trigger>
+                                            <button style="display: none" id={"noteButton" + note.id}>
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </Trigger>
+                                    </Modal>
                                 </div>
                             </div>
                         </li>

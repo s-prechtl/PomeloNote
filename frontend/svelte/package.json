@@ -24,6 +24,7 @@
 	"dependencies": {
 		"bootstrap-icons": "^1.9.1",
 		"nookies": "^2.5.2",
+		"sv-popup": "^0.2.5",
 		"webworker": "^0.8.4"
 	}
 }
