@@ -2,33 +2,34 @@
     import type {Note} from "../../models/types";
     import {StrapiNoteRepository} from "../../models/repos/note/StrapiNoteRepository";
     import {onMount} from "svelte";
-    import {currentNoteId} from "../../stores";
 
     let noteRepo: StrapiNoteRepository;
     let currentNote: Note;
-    let id;
-
     onMount(async () => {
-        currentNoteId.subscribe(v => id = v);
         noteRepo = StrapiNoteRepository.getInstance();
-        currentNote = await noteRepo.getNote(noteRepo.currentNoteId);
+        try {
+            currentNote = await noteRepo.getNote(noteRepo.currentNoteId);
+        } catch {
+            returnToListing();
+        }
         title = (<Note>currentNote).title;
         content = (<Note>currentNote).content;
-        console.log(noteRepo.currentNoteId)
     })
-
-    export let title: string, content: string;
 
     function save() {
         noteRepo.updateNote(currentNote.id, {
-            "title": currentNote.title,
-            "content": currentNote.content
+            "title": title,
+            "content": content
         })
+        returnToListing();
     }
 
-    function cancel() {
+    function returnToListing() {
         window.location = "/";
     }
+
+
+    export let title: string, content: string;
 
 </script>
 
@@ -46,7 +47,7 @@
     <input bind:value={title} class="input"> <br />
     <textarea bind:value={content} class="input"></textarea>
     <button on:click={() => save()} class="btn btn-primary save">Save</button>
-    <button on:click={() => cancel()} class="btn btn-outline-danger cancel">Cancel</button>
+    <button on:click={() => returnToListing()} class="btn btn-outline-danger cancel">Cancel</button>
 </div>
 </html>
 

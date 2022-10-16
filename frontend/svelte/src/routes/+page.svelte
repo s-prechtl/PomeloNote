@@ -77,8 +77,8 @@
      * @param note The note the user clicked on
      */
     function onNoteLiClick(note) {
+        noteRepo.currentNoteId = note.id;
         window.location = "/editor";
-        note.lastViewed = new Date();
     }
 </script>
 
