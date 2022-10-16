@@ -155,17 +155,11 @@
 </html>
 
 <style>
+    @import "../customBootstrap.css";
+
     html,
     :root {
-        --main-txt-color: black;
         --sub-txt-color: gray;
-        --cross-txt-color: red;
-
-        --color-primary: #fff494;
-        --color-primary-600: #fff17a;
-        --color-primary-700: #ffec47;
-        --color-primary-800: #ffe714;
-        --color-primary-900: #e0c900;
     }
 
     body {
@@ -217,18 +211,6 @@
 
     .bi-x {
         color: var(--cross-txt-color);
-    }
-
-    .btn-primary {
-        background-color: var(--color-primary-800);
-        border: var(--color-primary-800);
-        color: var(--main-txt-color);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--color-primary-900);
-        border: var(--color-primary-900);
-        color: var(--main-txt-color);
     }
 
     .list-date-text {
