@@ -4,6 +4,7 @@
     import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
     import {Content, Modal, Trigger} from "sv-popup";
 
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     const noteRepo: StrapiNoteRepository = StrapiNoteRepository.getInstance();
     let notes: Note[];
 
@@ -67,11 +68,15 @@
         window.location = "/editor";
     }
 
-    function closeModal(){
+    async function closeModal(){
         closeModalBool = true;
+        await sleep(1);
+        closeModalBool = false;
     }
 
     let closeModalBool = false;
+
+
 </script>
 
 
