@@ -39,28 +39,33 @@
     <title>Editor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-    <link href="" rel="stylesheet">
 </head>
 
 <html lang="en">
-<div class="offset-3 col-6">
+<div class="offset-3 col-6 wrapper">
+    <h1 class="">{title}</h1>
     <input bind:value={title} class="input"> <br />
-    <textarea bind:value={content} class="input"></textarea>
-    <button on:click={() => save()} class="btn btn-primary save">Save</button>
-    <button on:click={() => returnToListing()} class="btn btn-outline-danger cancel">Cancel</button>
+    <textarea bind:value={content} class="input textarea"></textarea>
+    <div class="button-container">
+        <button on:click={() => save()} class="btn btn-primary">Save</button>
+        <button on:click={() => returnToListing()} class="btn btn-outline-danger">Cancel</button>
+    </div>
 </div>
 </html>
 
 <style>
+    @import "../../customBootstrap.css";
+    .wrapper {
+        margin-top: 20px;
+    }
     .input {
-        margin-top: 30px;
+        margin-bottom: 10px;
         width: 100%;
     }
-    .save {
-        justify-content: right;
+    .button-container {
+        float: right;
     }
-
-    .cancel {
-        justify-content: right;
+    .textarea {
+        height: 300px;
     }
 </style>
