@@ -50,6 +50,9 @@ module.exports = createCoreController(noteUid, ({strapi}) => ({
           lastViewed: Date.now()
         }
       })
+      entry = await strapi.entityService.findOne(noteUid, noteId, {
+        populate: ['owners'],
+      });
       return JSON.stringify(entry);
     } else {
       ctx.response.status = 403;

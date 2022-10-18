@@ -3,7 +3,9 @@
     import {onMount} from "svelte";
     import {StrapiNoteRepository} from "../models/repos/note/StrapiNoteRepository";
     import {StrapiUserRepo} from "../models/repos/user/StrapiUserRepo";
+    import {Content, Modal, Trigger} from "sv-popup";
 
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     const noteRepo: StrapiNoteRepository = StrapiNoteRepository.getInstance();
     let notes: Note[];
 
@@ -13,7 +15,6 @@
         notes.forEach(note => {
             note.lastViewed = new Date(note.lastViewed);
         });
-        console.log(notes);
     });
 
     /**
@@ -23,7 +24,6 @@
         const newTitle = "New Note";
         const newNote = await addNote(newTitle);
         noteRepo.currentNoteId = newNote.id;
-        console.log(newNote.id);
         window.location = "/editor";
     }
 
@@ -32,23 +32,12 @@
      * @param title The title of the new Note
      * @return The created Note Object
      */
-    async function addNote(title: string) : Promise<Note> {
+    async function addNote(title: string): Promise<Note> {
         return await noteRepo.createNote({title: title,});
     }
 
     /**
-     * Gives the user a prompt if they are sure to delete this note and deletes it if they confirm
-     * @param note The note to be deleted
-     */
-    function deleteNotePrompt(note) {
-        const reallyDelete = confirm("Do you really want to delete this Note?");
-        if (reallyDelete) {
-            deleteNote(note);
-        }
-    }
-
-    /**
-     * Deletes the note from the "notes" Array
+     * Deletes the note from the "notes" Array and the database
      * @param note The note to be deleted
      */
     function deleteNote(note) {
@@ -73,13 +62,24 @@
     }
 
     /**
-     * Handles a click on a note list element
+     * Sets the currentNoteId and redirects to the editor
      * @param note The note the user clicked on
      */
     function onNoteLiClick(note) {
         noteRepo.currentNoteId = note.id;
         window.location = "/editor";
     }
+
+    /**
+     * Closes the modal (popup for deletion)
+     */
+    async function closeModal() {
+        closeModalBool = true;
+        await sleep(1);
+        closeModalBool = false;
+    }
+
+    let closeModalBool = false;
 </script>
 
 
@@ -95,6 +95,7 @@
 
 <body>
 <div class="container">
+
     <div class="row">
         <!-- Add Note Button -->
         <div class="offset-md-7 col-md-1">
@@ -121,10 +122,34 @@
                                 </div>
 
                                 <div class="col-1">
-                                    <button style="display: none" id={"noteButton" + note.id}
-                                            on:click={() => deleteNotePrompt(note)}>
-                                        <i class="bi bi-x"></i>
-                                    </button>
+                                    <!-- Delete Note Popup -->
+                                    <Modal basic small={true} button={false} close={closeModalBool}>
+                                        <Content>
+                                            <div class="row" style="margin-bottom: 10px;">
+                                                <h5>Do you really want to delete the "{note.title}" note?</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-4 offset-2">
+                                                    <button class="btn btn-primary"
+                                                            on:click={() => deleteNote(note)}
+                                                            on:click={() => closeModal()}>
+                                                        <b>Yes</b>
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 offset-2">
+                                                    <button class="btn btn-primary" autofocus
+                                                            on:click={() => closeModal()}>
+                                                        <b>No</b>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Content>
+                                        <Trigger>
+                                            <button style="display: none" id={"noteButton" + note.id}>
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </Trigger>
+                                    </Modal>
                                 </div>
                             </div>
                         </li>
@@ -138,17 +163,11 @@
 </html>
 
 <style>
+    @import "../customBootstrap.css";
+
     html,
     :root {
-        --main-txt-color: black;
         --sub-txt-color: gray;
-        --cross-txt-color: red;
-
-        --color-primary: #fff494;
-        --color-primary-600: #fff17a;
-        --color-primary-700: #ffec47;
-        --color-primary-800: #ffe714;
-        --color-primary-900: #e0c900;
     }
 
     body {
@@ -200,18 +219,6 @@
 
     .bi-x {
         color: var(--cross-txt-color);
-    }
-
-    .btn-primary {
-        background-color: var(--color-primary-800);
-        border: var(--color-primary-800);
-        color: var(--main-txt-color);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--color-primary-900);
-        border: var(--color-primary-900);
-        color: var(--main-txt-color);
     }
 
     .list-date-text {
