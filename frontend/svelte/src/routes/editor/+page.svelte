@@ -5,6 +5,7 @@
 
     let noteRepo: StrapiNoteRepository;
     let currentNote: Note;
+
     onMount(async () => {
         noteRepo = StrapiNoteRepository.getInstance();
         try {
@@ -16,18 +17,23 @@
         content = (<Note>currentNote).content;
     })
 
-    function save() {
+    /**
+     * saves the currently opened Note and returns to listing
+     */
+    function saveAndQuit() {
         noteRepo.updateNote(currentNote.id, {
             "title": title,
-            "content": content
+            "content": content,
         })
         returnToListing();
     }
 
+    /**
+     * redirects to listing
+     */
     function returnToListing() {
         window.location = "/";
     }
-
 
     export let title: string, content: string;
 
@@ -44,10 +50,10 @@
 <html lang="en">
 <div class="offset-3 col-6 wrapper">
     <h1 class="">{title}</h1>
-    <input bind:value={title} class="input"> <br />
+    <input bind:value={title} class="input"> <br/>
     <textarea bind:value={content} class="input textarea"></textarea>
     <div class="button-container">
-        <button on:click={() => save()} class="btn btn-primary">Save</button>
+        <button on:click={() => saveAndQuit()} class="btn btn-primary">Save</button>
         <button on:click={() => returnToListing()} class="btn btn-outline-danger">Cancel</button>
     </div>
 </div>
@@ -55,16 +61,20 @@
 
 <style>
     @import "../../customBootstrap.css";
+
     .wrapper {
         margin-top: 20px;
     }
+
     .input {
         margin-bottom: 10px;
         width: 100%;
     }
+
     .button-container {
         float: right;
     }
+
     .textarea {
         height: 300px;
     }
