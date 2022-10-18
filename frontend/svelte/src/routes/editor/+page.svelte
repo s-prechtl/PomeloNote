@@ -49,7 +49,7 @@
 
 <html lang="en">
 <div class="offset-3 col-6 wrapper">
-    <h1 class="">{title}</h1>
+    <h1 class="">{title === "" ? "‎" : title}</h1>
     <input bind:value={title} class="input"> <br/>
     <textarea bind:value={content} class="input textarea"></textarea>
     <div class="button-container">
