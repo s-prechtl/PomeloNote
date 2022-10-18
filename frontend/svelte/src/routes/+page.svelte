@@ -68,15 +68,16 @@
         window.location = "/editor";
     }
 
-    async function closeModal(){
+    /**
+     * Closes the modal (popup for deletion)
+     */
+    async function closeModal() {
         closeModalBool = true;
         await sleep(1);
         closeModalBool = false;
     }
 
     let closeModalBool = false;
-
-
 </script>
 
 
@@ -103,7 +104,7 @@
     <div class="row">
         <div class="offset-md-4 col-md-4">
             {#if notes?.length > 0}
-                <!-- Notes listing -->
+                <!-- Notes compact listing -->
                 <ul>
                     {#each notes as note}
                         <li on:mouseover={() => handleMouseOverLi(note.id)}
@@ -120,7 +121,7 @@
 
                                 <div class="col-1">
                                     <!-- Delete Note Popup -->
-                                    <Modal basic small={true} button={false} close={closeModalBool}> <!-- TODO: how to close properly?! no idea -->
+                                    <Modal basic small={true} button={false} close={closeModalBool}>
                                         <Content>
                                             <div class="row" style="margin-bottom: 10px;">
                                                 <h5>Do you really want to delete the "{note.title}" note?</h5>
