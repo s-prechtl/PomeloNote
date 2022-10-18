@@ -1,4 +1,4 @@
-import type {User} from "../../../models/user";
+import type {User} from "./user";
 
 /**
  * User Login Auth.

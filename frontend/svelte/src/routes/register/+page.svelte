@@ -1,8 +1,8 @@
 <script lang="ts">
     import logo from "../../resources/images/logo2.svg";
     import {SvelteToast} from "@zerodevx/svelte-toast";
-    import type {Authentication} from "../login/models/authentication";
-    import {createErrorToast} from "../../models/customToasts";
+    import {StrapiUserRepo} from "../../models/repos/user/StrapiUserRepo";
+    import {handleErrorsFromResponseWithToast} from "../../models/PomeloUtils";
 
     let user: string;
     let password: string;
@@ -13,32 +13,12 @@
      * Handles the button click.
      */
     async function handleSubmit() {
-        const endpoint = "http://localhost:1337/api/auth/local/register";
-        const payload = {
-            email: email,
-            password: password,
-            username: user
-        };
+        const userRepo: StrapiUserRepo = StrapiUserRepo.getInstance(false);
 
-        const login = await fetch(endpoint, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-
-        const response: Authentication = await login.json();
+        const response = await userRepo.registerUser(email, user, password);
 
         if (response.error != null) {
-            if (response.error.details.errors) {
-                for (const error of response.error.details.errors) {
-                    createErrorToast(error.message);
-                }
-            } else {
-                createErrorToast(response.error.message);
-            }
+            handleErrorsFromResponseWithToast(response);
         } else {
             window.location = "/login";
         }
@@ -49,29 +29,29 @@
         lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>PomeloNote | Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" rel="stylesheet">
 </head>
 
 <body>
 <main class="form-signin w-100 m-auto">
 
-    <img class="img-fluid" src="{logo}" alt="Logo">
+    <img alt="Logo" class="img-fluid" src="{logo}">
     <h1 class="h3 mb-3 fw-normal">Register a new user</h1>
 
     <div class="form-floating">
-        <input type="text" class="form-control" id="floatingUsr" placeholder="exampleUsername" bind:value={user}>
+        <input bind:value={user} class="form-control" id="floatingUsr" placeholder="exampleUsername" type="text">
         <label for="floatingUsr">Username</label>
     </div>
 
     <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value={email}>
+        <input bind:value={email} class="form-control" id="floatingInput" placeholder="name@example.com" type="email">
         <label for="floatingInput">Email address</label>
     </div>
     <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" bind:value={password}>
+        <input bind:value={password} class="form-control" id="floatingPassword" placeholder="Password" type="password">
         <label for="floatingPassword">Password</label>
     </div>
 
@@ -79,7 +59,7 @@
         Register user
         {#if user}: {user} {/if}
     </button>
-    <a href="/login" class="opacity-75 d-flex justify-content-center text-center fs-6">Already registered? Login.</a>
+    <a class="opacity-75 d-flex justify-content-center text-center fs-6" href="/login">Already registered? Login.</a>
     <p class="mt-5 mb-3 text-muted">&copy;2022</p>
 
 </main>

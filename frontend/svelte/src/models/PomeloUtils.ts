@@ -1,4 +1,5 @@
-import {parseCookies} from "nookies";
+import type {Authentication} from "./authentication";
+import {createErrorToast} from "./customToasts";
 
 /**
  * Capitalises first letter of string.
@@ -22,13 +23,14 @@ export async function bearerFetch(endpoint: string, jwt: string, baseUrl: string
     });
 }
 
-
-const getJwtCookie = () => {
-    // @ts-ignore
-    return parseCookies("/").jwt;
-};
-
-/**
- * JWT Cookie
- */
-export const jwt: string = getJwtCookie();
+export function handleErrorsFromResponseWithToast(response: Authentication) {
+    if (response.error != null) {
+        if (response.error.details.errors) {
+            for (const error of response.error.details.errors) {
+                createErrorToast(error.message);
+            }
+        } else {
+            createErrorToast(response.error.message);
+        }
+    }
+}

@@ -1,7 +1,8 @@
 <script lang="ts">
     import type {Note} from "../models/types";
     import {onMount} from "svelte";
-    import {StrapiNoteRepository} from "../models/StrapiNoteRepository";
+    import {StrapiNoteRepository} from "../models/repos/note/StrapiNoteRepository";
+    import {StrapiUserRepo} from "../models/repos/user/StrapiUserRepo";
     import {Content, Modal, Trigger} from "sv-popup";
 
     const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -9,6 +10,7 @@
     let notes: Note[];
 
     onMount(async () => {
+        StrapiUserRepo.getInstance();
         notes = await noteRepo.getNotes();
         notes.forEach(note => {
             note.lastViewed = new Date(note.lastViewed);
@@ -84,11 +86,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>PomeloNote | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" rel="stylesheet">
 </head>
 
 <body>
@@ -103,8 +105,8 @@
 
     <div class="row">
         <div class="offset-md-4 col-md-4">
-            {#if notes?.length > 0}
-                <!-- Notes compact listing -->
+            {#if notes}
+                <!-- Notes listing -->
                 <ul>
                     {#each notes as note}
                         <li on:mouseover={() => handleMouseOverLi(note.id)}

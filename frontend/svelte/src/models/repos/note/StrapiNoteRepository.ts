@@ -1,6 +1,8 @@
-import type {Note} from "./types";
+import type {Note} from "../../types";
 import {parseCookies} from "nookies";
 import type {NoteRepository} from "./NoteRepository";
+import {currentNoteId} from "../../../stores";
+
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -13,13 +15,19 @@ export class StrapiNoteRepository implements NoteRepository {
         return this.instance;
     }
 
-    private constructor() {}
+    private constructor() {
+        currentNoteId.subscribe((value) => (this._currentNoteId = value));
+    }
 
-    private _currentNoteId: number | undefined;
+    private _currentNoteId: unknown;
     private static apiNoteEndpoint: string = "http://localhost:1337/api/notes"
 
     public set currentNoteId(value: number | undefined) {
-        this._currentNoteId = value;
+        currentNoteId.set(value || -1);
+    }
+
+    public get currentNoteId(): number {
+        return <number>this._currentNoteId;
     }
 
     public async getNotes(): Promise<Note[]>{
@@ -36,7 +44,7 @@ export class StrapiNoteRepository implements NoteRepository {
         if (this._currentNoteId === null || this._currentNoteId === undefined) {
             return;
         }
-        return await this.getNote(this._currentNoteId);
+        return await this.getNote(this.currentNoteId);
     }
 
     public async updateNote(id: number, note: Partial<Note>): Promise<Note> {
@@ -70,8 +78,8 @@ export class StrapiNoteRepository implements NoteRepository {
         return "bearer TOKEN"
     }
 
-    private static getAuthorizationHeader() {
-        const jwt = parseCookies().jwt;
+    static getAuthorizationHeader() {
+        const jwt = parseCookies('/').jwt;
         return `bearer ${jwt}`
     }
 }
