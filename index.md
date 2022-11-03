@@ -1,2 +1,2 @@
 # Hello World
-[Hallo 2](README.md)
+[Hallo 2](README.html)
