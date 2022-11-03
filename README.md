@@ -17,3 +17,5 @@
 
 ### Restart and rebuild Strapi:
 ``docker-compose up --detach --build strapi``
+
+[TEST](index.md)
