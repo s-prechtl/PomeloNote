@@ -11,12 +11,15 @@ A username, an email and a password that's all you need. If you are missing one 
 ![register](images/register.png)
 
 ## Editor
+You can edit your notes with our minimalistic editor interface.
 ![editor](images/editor.png)
 
 ## Listing
+Here you can see all your notes. Click on them to open the editor or hover and press the red "X" to delete them.
 ![listing](images/listing.png)
 
 ## Delete
+Confirm the deletion.
 ![delete](images/delete.png)
 
 # The Team
