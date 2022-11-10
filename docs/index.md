@@ -20,6 +20,9 @@ A username, an email and a password that's all you need. If you are missing one 
 ![delete](images/delete.png)
 
 # The Team
-[About us](about_us.md)
-
+{% for dev in site.data.devs %}
+  {{ dev.name }}
+  [GitHub](https://github.com/{{ dev.github }}) 
+  ![{{ dev.name }}](images/{{ dev.image }}.jpg)
+{% endfor %}
 
