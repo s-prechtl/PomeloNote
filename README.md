@@ -1,5 +1,5 @@
 # 🚀 Getting started with PomeloNote
-
+### **THIS REPOSITORY HAS DEPENDENCIES WITH SECURITY VULNERABILITIES. YOU MIGHT WANT TO UPDATE PACKAGES BEFORE USE.**
 ## Setup
 - run `npm i`
 - get the .env file and save it to the root directory of the project
@@ -17,5 +17,3 @@
 
 ### Restart and rebuild Strapi:
 ``docker-compose up --detach --build strapi``
-
-[TEST](index.md)
